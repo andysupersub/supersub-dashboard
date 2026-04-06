@@ -36,27 +36,21 @@ module.exports = async function handler(req, res) {
         }
         ... on NotFoundError {
           message
-          type
         }
         ... on UnauthorizedError {
           message
-          type
         }
         ... on UnexpectedError {
           message
-          type
         }
         ... on RestProxyError {
           message
-          type
         }
         ... on LimitReachedError {
           message
-          type
         }
         ... on InvalidInputError {
           message
-          type
         }
       }
     }
