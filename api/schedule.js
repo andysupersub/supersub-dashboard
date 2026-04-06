@@ -1,4 +1,5 @@
 // api/schedule.js — Vercel Serverless Function (CommonJS)
+// Async fire-and-forget approach — returns immediately, schedules in background
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -29,55 +30,65 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'No valid channel IDs found for selected platforms' });
   }
 
-  // Schedule to each platform separately via Buffer API directly
-  // This is faster than going through Claude MCP
-  const results = [];
-  const errors = [];
+  const prompt = `
+Schedule this social media carousel post to Buffer.
 
-  for (const channelId of selectedChannelIds) {
-    try {
-      // Use Buffer API directly — much faster than MCP via Claude
-      const bufferRes = await fetch('https://api.bufferapp.com/1/updates/create.json', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          access_token: BUFFER_API_KEY,
-          profile_ids: channelId,
-          text: caption,
-          scheduled_at: scheduledAt,
-          media: JSON.stringify({ photo: imageUrls[0] }),
-        }),
-      });
+Use the create_post tool for each of these channel IDs: ${selectedChannelIds.join(', ')}
 
-      const bufferData = await bufferRes.json();
-      console.log('Buffer response for channel', channelId, ':', JSON.stringify(bufferData).slice(0, 200));
+Post details:
+- Text: ${caption}
+- Images (in order): ${imageUrls.join(', ')}
+- Scheduled time (UTC): ${scheduledAt}
 
-      if (bufferRes.ok) {
-        results.push({ channelId, success: true });
-      } else {
-        errors.push({ channelId, error: bufferData });
-      }
-    } catch (err) {
-      console.error('Buffer error for channel', channelId, err.message);
-      errors.push({ channelId, error: err.message });
-    }
-  }
+Schedule each channel separately. Use the same text and images for all channels.
+  `.trim();
 
-  if (results.length > 0) {
-    return res.status(200).json({
-      success: true,
-      message: `Scheduled to ${results.length} platform(s) successfully.`,
-      results,
-      errors: errors.length ? errors : undefined,
-      platforms,
-      scheduledAt,
+  // ============================================================
+  // FIRE AND FORGET — respond immediately, schedule in background
+  // ============================================================
+
+  // Return success to dashboard right away
+  res.status(200).json({
+    success: true,
+    message: `Scheduling to ${platforms.join(', ')} for ${scheduledAt}. Check Buffer in 30 seconds to confirm.`,
+    platforms,
+    scheduledAt,
+    note: 'Post is being scheduled in the background. Please verify in Buffer.'
+  });
+
+  // Now do the actual work after responding
+  // Vercel will keep the function alive briefly after res.end()
+  try {
+    console.log('Starting background schedule for:', title, 'to channels:', selectedChannelIds);
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'mcp-client-2025-04-04',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        mcp_servers: [
+          {
+            type: 'url',
+            url: 'https://mcp.buffer.com/mcp',
+            name: 'buffer',
+            authorization_token: BUFFER_API_KEY,
+          }
+        ],
+        messages: [{ role: 'user', content: prompt }],
+      }),
     });
-  } else {
-    return res.status(500).json({
-      error: 'Failed to schedule to any platform',
-      errors,
-    });
+
+    const data = await response.json();
+    const text = data.content?.filter(b => b.type === 'text').map(b => b.text).join('\n') || '';
+    console.log('Background schedule completed:', text.slice(0, 300));
+
+  } catch (err) {
+    console.error('Background schedule error:', err.message);
   }
 };
