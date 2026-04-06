@@ -59,6 +59,14 @@ module.exports = async function handler(req, res) {
   const results = await Promise.all(
     selectedChannels.map(async ({ platform, id }) => {
       try {
+        // Instagram and Facebook require a post type in metadata
+        const platformMetadata = {};
+        if (platform === 'instagram') {
+          platformMetadata.instagramOptions = { shareToFeed: true, postType: 'feed' };
+        } else if (platform === 'facebook') {
+          platformMetadata.facebookOptions = { postType: 'post' };
+        }
+
         const variables = {
           input: {
             channelId: id,
@@ -67,6 +75,7 @@ module.exports = async function handler(req, res) {
             text: caption,
             mode: 'customScheduled',
             assets: { images: imageUrls.map(url => ({ url })) },
+            ...(Object.keys(platformMetadata).length ? { metadata: platformMetadata } : {}),
           }
         };
 
