@@ -1,7 +1,1 @@
-{
-  "functions": {
-    "api/schedule.js": {
-      "maxDuration": 30
-    }
-  }
-}
+{"functions":{"api/schedule.js":{"maxDuration":10}}}
