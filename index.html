@@ -165,6 +165,40 @@
     .page-header{padding:20px 24px;}
     .grid-wrap{padding:20px 24px;}
   }
+
+  .schedule-btn{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:11px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:opacity 0.2s;letter-spacing:-0.01em;display:flex;align-items:center;gap:5px;margin-top:10px;width:100%;justify-content:center;}
+  .schedule-btn:hover{opacity:0.85;}
+  .schedule-btn.scheduled{background:#27ae60;}
+  .sched-overlay{display:none;position:fixed;inset:0;background:rgba(1,22,72,0.6);z-index:600;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);}
+  .sched-overlay.open{display:flex;}
+  .sched-modal{background:var(--white);border-radius:16px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 80px rgba(1,22,72,0.25);}
+  .sched-header{background:var(--navy);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+  .sched-header h3{font-size:15px;font-weight:600;color:#fff;letter-spacing:-0.03em;}
+  .sched-header button{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .sched-body{padding:24px;}
+  .sched-carousel-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:20px;padding:10px 12px;background:var(--mist);border-radius:8px;letter-spacing:-0.02em;}
+  .sched-label{font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+  .platform-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .platform-pill{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.15s;color:var(--muted);background:var(--white);user-select:none;}
+  .platform-pill.selected{border-color:var(--blue);color:var(--blue);background:var(--mist);}
+  .platform-pill input{display:none;}
+  .sched-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px;}
+  .sched-input{width:100%;border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;background:var(--white);}
+  .sched-input:focus{border-color:var(--blue);}
+  .sched-tz{font-size:11px;color:var(--muted);margin-bottom:20px;}
+  .sched-actions{display:flex;gap:10px;justify-content:flex-end;}
+  .sched-cancel{background:none;border:1px solid var(--border);border-radius:8px;padding:8px 18px;font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);font-family:'Inter',sans-serif;}
+  .sched-confirm{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity 0.2s;}
+  .sched-confirm:hover{opacity:0.85;}
+  .sched-confirm:disabled{opacity:0.4;cursor:not-allowed;}
+  .sched-status{font-size:12px;margin-top:12px;padding:10px 12px;border-radius:8px;display:none;}
+  .sched-status.success{background:#eafaf1;color:#27ae60;display:block;}
+  .sched-status.error{background:#fff3f3;color:#c0392b;display:block;}
+  @media(max-width:700px){
+    .sched-modal{max-width:100%;border-radius:20px 20px 0 0;}
+    .sched-overlay{padding:0;align-items:flex-end;}
+    .sched-row{grid-template-columns:1fr;}
+  }
 </style>
 </head>
 <body>
@@ -273,6 +307,7 @@ function buildCard(carousel, slides) {
       <div class="card-title">${esc(carousel.title)}</div>
       <div class="card-sub">Carousel ${carousel.folder_number}</div>
       <div class="card-date">${fmtDate(carousel.created_at)}</div>
+      <button class="schedule-btn" id="sched-btn-${carousel.id}" onclick="event.stopPropagation();openSchedModal(${carousel.id})">&#128197; Schedule to Buffer</button>
     </div>`;
   return card;
 }
@@ -406,6 +441,132 @@ async function init() {
   }
 }
 init();
+
+// SCHEDULE MODAL
+let schedCarouselId = null;
+
+function openSchedModal(carouselId) {
+  schedCarouselId = carouselId;
+  const carousel = D.carousels.find(c => c.id === carouselId);
+  document.getElementById('sched-carousel-name').textContent = carousel.title;
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('sched-date').value = tomorrow.toISOString().split('T')[0];
+  document.getElementById('sched-time').value = '09:00';
+  const status = document.getElementById('sched-status');
+  status.className = 'sched-status';
+  status.textContent = '';
+  const btn = document.getElementById('sched-confirm-btn');
+  btn.disabled = false;
+  btn.textContent = 'Schedule Post';
+  document.getElementById('sched-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSchedModal() {
+  document.getElementById('sched-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  schedCarouselId = null;
+}
+
+function closeSchedOnOverlay(e) {
+  if (e.target === document.getElementById('sched-overlay')) closeSchedModal();
+}
+
+function togglePill(checkbox) {
+  checkbox.closest('.platform-pill').classList.toggle('selected', checkbox.checked);
+}
+
+async function confirmSchedule() {
+  if (!schedCarouselId) return;
+  const carousel = D.carousels.find(c => c.id === schedCarouselId);
+  const slides = D.slides.filter(s => s.carousel_id === schedCarouselId).sort((a,b) => a.slide_order - b.slide_order);
+  const platforms = [...document.querySelectorAll('.platform-pill input:checked')].map(i => i.value);
+  if (!platforms.length) { showSchedStatus('error','Please select at least one platform.'); return; }
+  const dateVal = document.getElementById('sched-date').value;
+  const timeVal = document.getElementById('sched-time').value;
+  if (!dateVal || !timeVal) { showSchedStatus('error','Please select a date and time.'); return; }
+  const nzOffset = 13;
+  const localDt = new Date(dateVal + 'T' + timeVal + ':00');
+  const utcDt = new Date(localDt.getTime() - nzOffset * 60 * 60 * 1000);
+  const scheduledAt = utcDt.toISOString();
+  const btn = document.getElementById('sched-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Scheduling...';
+  try {
+    const res = await fetch('/api/schedule', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        title: carousel.title,
+        caption: carousel.caption,
+        imageUrls: slides.map(s => s.image_url),
+        platforms,
+        scheduledAt,
+      })
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      showSchedStatus('success', 'Scheduled to ' + platforms.join(', ') + ' for ' + dateVal + ' at ' + timeVal + ' NZ time.');
+      btn.textContent = 'Scheduled!';
+      const cardBtn = document.getElementById('sched-btn-' + schedCarouselId);
+      if (cardBtn) { cardBtn.classList.add('scheduled'); cardBtn.textContent = 'Scheduled'; }
+      setTimeout(() => closeSchedModal(), 2500);
+    } else {
+      showSchedStatus('error', data.error || 'Something went wrong. Please try again.');
+      btn.disabled = false; btn.textContent = 'Schedule Post';
+    }
+  } catch(err) {
+    showSchedStatus('error', 'Could not reach the server. Check your Vercel deployment.');
+    btn.disabled = false; btn.textContent = 'Schedule Post';
+  }
+}
+
+function showSchedStatus(type, msg) {
+  const el = document.getElementById('sched-status');
+  el.className = 'sched-status ' + type;
+  el.textContent = msg;
+}
+
 </script>
+
+<div class="sched-overlay" id="sched-overlay" onclick="closeSchedOnOverlay(event)">
+  <div class="sched-modal">
+    <div class="sched-header">
+      <h3>Schedule to Buffer</h3>
+      <button onclick="closeSchedModal()">&#x2715;</button>
+    </div>
+    <div class="sched-body">
+      <div class="sched-carousel-name" id="sched-carousel-name"></div>
+      <div class="sched-label">Platforms</div>
+      <div class="platform-row">
+        <label class="platform-pill selected" id="pill-instagram">
+          <input type="checkbox" value="instagram" checked onchange="togglePill(this)" />
+          Instagram
+        </label>
+        <label class="platform-pill selected" id="pill-facebook">
+          <input type="checkbox" value="facebook" checked onchange="togglePill(this)" />
+          Facebook
+        </label>
+        <label class="platform-pill" id="pill-tiktok">
+          <input type="checkbox" value="tiktok" onchange="togglePill(this)" />
+          TikTok
+        </label>
+      </div>
+      <div class="sched-label">Schedule Date &amp; Time (NZ Time)</div>
+      <div class="sched-row">
+        <input type="date" class="sched-input" id="sched-date" />
+        <input type="time" class="sched-input" id="sched-time" value="09:00" />
+      </div>
+      <div class="sched-tz">NZ Time (NZDT UTC+13 / NZST UTC+12)</div>
+      <div class="sched-actions">
+        <button class="sched-cancel" onclick="closeSchedModal()">Cancel</button>
+        <button class="sched-confirm" id="sched-confirm-btn" onclick="confirmSchedule()">Schedule Post</button>
+      </div>
+      <div class="sched-status" id="sched-status"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
