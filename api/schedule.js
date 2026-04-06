@@ -7,47 +7,20 @@ module.exports = async function handler(req, res) {
 
   const BUFFER_API_KEY = process.env.BUFFER_API_KEY;
 
+  // Get PostType and PostTypeFacebook enum values
   const introRes = await fetch('https://api.buffer.com/graphql', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
     body: JSON.stringify({ query: `
       query {
-        postInputMetaData: __type(name: "PostInputMetaData") {
-          inputFields {
-            name
-            type { name kind ofType { name kind ofType { name kind } } }
-          }
-        }
+        postType: __type(name: "PostType") { enumValues { name } }
+        postTypeFacebook: __type(name: "PostTypeFacebook") { enumValues { name } }
       }
     `}),
   });
   const data = await introRes.json();
-  const fields = data?.data?.postInputMetaData?.inputFields || [];
-  console.log('PostInputMetaData fields:', JSON.stringify(fields));
+  console.log('PostType enums:', JSON.stringify(data?.data?.postType?.enumValues?.map(e => e.name)));
+  console.log('PostTypeFacebook enums:', JSON.stringify(data?.data?.postTypeFacebook?.enumValues?.map(e => e.name)));
 
-  // Also introspect each nested type
-  const nestedTypes = fields
-    .map(f => f.type?.name || f.type?.ofType?.name || f.type?.ofType?.ofType?.name)
-    .filter(Boolean);
-  console.log('Nested types:', nestedTypes);
-
-  // Introspect all nested types at once
-  const nestedQuery = nestedTypes.map((t, i) => `
-    type${i}: __type(name: "${t}") {
-      name
-      kind
-      inputFields { name type { name kind ofType { name } } }
-      enumValues { name }
-    }
-  `).join('\n');
-
-  const nestedRes = await fetch('https://api.buffer.com/graphql', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
-    body: JSON.stringify({ query: `query { ${nestedQuery} }` }),
-  });
-  const nestedData = await nestedRes.json();
-  console.log('Nested types detail:', JSON.stringify(nestedData?.data));
-
-  return res.status(200).json({ debug: true, fields, nestedData: nestedData?.data });
+  return res.status(200).json({ debug: true, data: data?.data });
 };
