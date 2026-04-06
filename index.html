@@ -486,10 +486,14 @@ async function confirmSchedule() {
   const dateVal = document.getElementById('sched-date').value;
   const timeVal = document.getElementById('sched-time').value;
   if (!dateVal || !timeVal) { showSchedStatus('error','Please select a date and time.'); return; }
-  const nzOffset = 13;
-  const localDt = new Date(dateVal + 'T' + timeVal + ':00');
-  const utcDt = new Date(localDt.getTime() - nzOffset * 60 * 60 * 1000);
-  const scheduledAt = utcDt.toISOString();
+  // Convert NZ time to UTC using Pacific/Auckland timezone (handles NZST/NZDT automatically)
+  const nzDateStr = dateVal + 'T' + timeVal + ':00';
+  // Create a date interpreted as NZ local time
+  const parts = new Date(nzDateStr + '+00:00');
+  const nzLocal = new Date(parts.toLocaleString('en-US', { timeZone: 'Pacific/Auckland' }));
+  const utcEquiv = new Date(parts.toLocaleString('en-US', { timeZone: 'UTC' }));
+  const nzOffsetMs = nzLocal.getTime() - utcEquiv.getTime();
+  const scheduledAt = new Date(parts.getTime() - nzOffsetMs).toISOString();
   const btn = document.getElementById('sched-confirm-btn');
   btn.disabled = true;
   btn.textContent = 'Scheduling...';
@@ -558,7 +562,7 @@ function showSchedStatus(type, msg) {
         <input type="date" class="sched-input" id="sched-date" />
         <input type="time" class="sched-input" id="sched-time" value="09:00" />
       </div>
-      <div class="sched-tz">NZ Time (NZDT UTC+13 / NZST UTC+12)</div>
+      <div class="sched-tz">NZ Time (Pacific/Auckland — auto adjusted)</div>
       <div class="sched-actions">
         <button class="sched-cancel" onclick="closeSchedModal()">Cancel</button>
         <button class="sched-confirm" id="sched-confirm-btn" onclick="confirmSchedule()">Schedule Post</button>
