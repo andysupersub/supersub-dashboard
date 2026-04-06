@@ -1,56 +1,35 @@
-// api/schedule.js — Vercel Serverless Function
-// Receives schedule request from dashboard, calls Buffer MCP via Claude API
+// api/schedule.js — Vercel Serverless Function (CommonJS)
 
-export default async function handler(req, res) {
-  // Only allow POST
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // CORS headers
+module.exports = async function handler(req, res) {
+  // CORS preflight
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  const {
-    title,       // carousel title
-    caption,     // full caption text
-    imageUrls,   // array of image URLs (slides)
-    platforms,   // array: ['instagram', 'facebook', 'tiktok']
-    scheduledAt, // ISO datetime string in NZ time converted to UTC
-  } = req.body;
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Validate
+  const { title, caption, imageUrls, platforms, scheduledAt } = req.body;
+
   if (!caption || !imageUrls?.length || !platforms?.length || !scheduledAt) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  // ============================================================
-  // FILL IN YOUR VALUES HERE
-  // ============================================================
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-  const BUFFER_MCP_URL = 'https://mcp.buffer.com/mcp';
-  const BUFFER_API_KEY = process.env.BUFFER_API_KEY;
+  const BUFFER_API_KEY    = process.env.BUFFER_API_KEY;
 
-  // Your Buffer Channel IDs — fill these in
   const CHANNEL_IDS = {
-    instagram: process.env.BUFFER_INSTAGRAM_ID, // e.g. '6123abc456def789'
+    instagram: process.env.BUFFER_INSTAGRAM_ID,
     facebook:  process.env.BUFFER_FACEBOOK_ID,
     tiktok:    process.env.BUFFER_TIKTOK_ID,
   };
 
-  // Build selected channel IDs
-  const selectedChannelIds = platforms
-    .map(p => CHANNEL_IDS[p])
-    .filter(Boolean);
+  const selectedChannelIds = platforms.map(p => CHANNEL_IDS[p]).filter(Boolean);
 
   if (!selectedChannelIds.length) {
     return res.status(400).json({ error: 'No valid channel IDs found for selected platforms' });
   }
 
-  // ============================================================
-  // BUILD THE PROMPT FOR CLAUDE + BUFFER MCP
-  // ============================================================
   const prompt = `
 You are a social media scheduling assistant for SuperSub New Zealand.
 
@@ -83,39 +62,31 @@ Confirm when all posts have been scheduled successfully.
         mcp_servers: [
           {
             type: 'url',
-            url: BUFFER_MCP_URL,
+            url: 'https://mcp.buffer.com/mcp',
             name: 'buffer',
             authorization_token: BUFFER_API_KEY,
           }
         ],
-        messages: [
-          { role: 'user', content: prompt }
-        ],
+        messages: [{ role: 'user', content: prompt }],
       }),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error('Claude API error:', data);
+      console.error('Claude API error:', JSON.stringify(data));
       return res.status(500).json({ error: 'Claude API error', detail: data });
     }
 
-    // Extract text response
     const text = data.content
       .filter(b => b.type === 'text')
       .map(b => b.text)
       .join('\n');
 
-    return res.status(200).json({
-      success: true,
-      message: text,
-      platforms,
-      scheduledAt,
-    });
+    return res.status(200).json({ success: true, message: text, platforms, scheduledAt });
 
   } catch (err) {
-    console.error('Schedule error:', err);
+    console.error('Schedule error:', err.message);
     return res.status(500).json({ error: 'Failed to schedule post', detail: err.message });
   }
-}
+};
