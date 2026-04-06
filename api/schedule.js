@@ -1,4 +1,4 @@
-// api/schedule.js — Buffer GraphQL API direct (fixed schema)
+// api/schedule.js — Buffer GraphQL API direct (fixed)
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -33,6 +33,7 @@ module.exports = async function handler(req, res) {
   const results = await Promise.all(
     selectedChannels.map(async ({ platform, id }) => {
       try {
+        // No inline fragments — just get back what we can
         const mutation = `
           mutation CreatePost($input: CreatePostInput!) {
             createPost(input: $input) {
@@ -42,10 +43,6 @@ module.exports = async function handler(req, res) {
                   status
                   dueAt
                 }
-              }
-              ... on PostActionError {
-                message
-                code
               }
             }
           }
@@ -77,13 +74,7 @@ module.exports = async function handler(req, res) {
           return { platform, success: false, error: data.errors[0]?.message };
         }
 
-        const result = data.data?.createPost;
-        if (result?.message) {
-          // PostActionError
-          return { platform, success: false, error: result.message };
-        }
-
-        return { platform, success: true, postId: result?.post?.id };
+        return { platform, success: true, postId: data.data?.createPost?.post?.id };
 
       } catch (err) {
         console.error(`Buffer ${platform} error:`, err.message);
