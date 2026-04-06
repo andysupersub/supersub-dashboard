@@ -1,3 +1,5 @@
+// api/schedule.js — Buffer GraphQL API (final clean version)
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -6,7 +8,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { title, caption, imageUrls, platforms, scheduledAt } = req.body;
+  const { caption, imageUrls, platforms, scheduledAt } = req.body;
 
   if (!caption || !imageUrls?.length || !platforms?.length || !scheduledAt) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -28,39 +30,26 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'No valid channel IDs found' });
   }
 
-  // Introspect ShareMode enum values
-  const introRes = await fetch('https://api.buffer.com/graphql', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
-    body: JSON.stringify({ query: `query { __type(name: "ShareMode") { enumValues { name } } }` }),
-  });
-  const introData = await introRes.json();
-  const shareModes = introData?.data?.__type?.enumValues?.map(e => e.name) || [];
-  console.log('ShareMode enum values:', shareModes);
-
-  // Pick first available mode
-  const mode = shareModes[0] || 'STANDARD';
+  const mutation = `
+    mutation CreatePost($input: CreatePostInput!) {
+      createPost(input: $input) {
+        ... on PostActionSuccess {
+          post { id status dueAt }
+        }
+      }
+    }
+  `;
 
   const results = await Promise.all(
     selectedChannels.map(async ({ platform, id }) => {
       try {
-        const mutation = `
-          mutation CreatePost($input: CreatePostInput!) {
-            createPost(input: $input) {
-              ... on PostActionSuccess {
-                post { id status dueAt }
-              }
-            }
-          }
-        `;
-
         const variables = {
           input: {
             channelId: id,
-            schedulingType: 'notification',
+            schedulingType: 'automatic',
             dueAt: scheduledAt,
             text: caption,
-            mode,
+            mode: 'customScheduled',
             assets: {
               images: imageUrls.map(url => ({ url })),
             },
@@ -69,20 +58,25 @@ module.exports = async function handler(req, res) {
 
         const r = await fetch('https://api.buffer.com/graphql', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${BUFFER_API_KEY}`,
+          },
           body: JSON.stringify({ query: mutation, variables }),
         });
 
         const data = await r.json();
-        console.log(`Buffer ${platform} response:`, JSON.stringify(data).slice(0, 400));
 
         if (data.errors) {
+          console.error(`Buffer ${platform} error:`, data.errors[0]?.message);
           return { platform, success: false, error: data.errors[0]?.message };
         }
 
-        return { platform, success: true, postId: data.data?.createPost?.post?.id };
+        console.log(`Buffer ${platform}: scheduled successfully`);
+        return { platform, success: true };
 
       } catch (err) {
+        console.error(`Buffer ${platform} exception:`, err.message);
         return { platform, success: false, error: err.message };
       }
     })
@@ -90,7 +84,6 @@ module.exports = async function handler(req, res) {
 
   const succeeded = results.filter(r => r.success);
   const failed = results.filter(r => !r.success);
-  console.log('Final results:', JSON.stringify(results));
 
   if (succeeded.length > 0) {
     return res.status(200).json({
