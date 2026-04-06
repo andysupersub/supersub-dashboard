@@ -1,5 +1,3 @@
-// api/schedule.js — Buffer GraphQL API (final version with all union types)
-
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -7,132 +5,49 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { caption, imageUrls, platforms, scheduledAt } = req.body;
-  if (!caption || !imageUrls?.length || !platforms?.length || !scheduledAt) {
-    return res.status(400).json({ error: 'Missing required fields' });
-  }
-
   const BUFFER_API_KEY = process.env.BUFFER_API_KEY;
-  const CHANNEL_IDS = {
-    instagram: process.env.BUFFER_INSTAGRAM_ID,
-    facebook:  process.env.BUFFER_FACEBOOK_ID,
-    tiktok:    process.env.BUFFER_TIKTOK_ID,
-  };
 
-  const selectedChannels = platforms
-    .map(p => ({ platform: p, id: CHANNEL_IDS[p] }))
-    .filter(c => c.id);
-
-  if (!selectedChannels.length) {
-    return res.status(400).json({ error: 'No valid channel IDs found' });
-  }
-
-  // Include ALL union types so we can see exactly what's returned
-  const mutation = `
-    mutation CreatePost($input: CreatePostInput!) {
-      createPost(input: $input) {
-        ... on PostActionSuccess {
-          post { id status dueAt }
-        }
-        ... on NotFoundError {
-          message
-        }
-        ... on UnauthorizedError {
-          message
-        }
-        ... on UnexpectedError {
-          message
-        }
-        ... on RestProxyError {
-          message
-        }
-        ... on LimitReachedError {
-          message
-        }
-        ... on InvalidInputError {
-          message
-        }
-      }
-    }
-  `;
-
-  const results = await Promise.all(
-    selectedChannels.map(async ({ platform, id }) => {
-      try {
-        // Instagram and Facebook require a post type in metadata
-        const platformMetadata = {};
-        if (platform === 'instagram') {
-          platformMetadata.instagramOptions = { shareToFeed: true, postType: 'feed' };
-        } else if (platform === 'facebook') {
-          platformMetadata.facebookOptions = { postType: 'post' };
-        }
-
-        const variables = {
-          input: {
-            channelId: id,
-            schedulingType: 'automatic',
-            dueAt: scheduledAt,
-            text: caption,
-            mode: 'customScheduled',
-            assets: { images: imageUrls.map(url => ({ url })) },
-            ...(Object.keys(platformMetadata).length ? { metadata: platformMetadata } : {}),
+  const introRes = await fetch('https://api.buffer.com/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
+    body: JSON.stringify({ query: `
+      query {
+        postInputMetaData: __type(name: "PostInputMetaData") {
+          inputFields {
+            name
+            type { name kind ofType { name kind ofType { name kind } } }
           }
-        };
-
-        const r = await fetch('https://api.buffer.com/graphql', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${BUFFER_API_KEY}`,
-          },
-          body: JSON.stringify({ query: mutation, variables }),
-        });
-
-        const data = await r.json();
-        console.log(`Buffer ${platform} FULL:`, JSON.stringify(data));
-
-        if (data.errors) {
-          return { platform, success: false, error: data.errors[0]?.message };
         }
-
-        const result = data.data?.createPost;
-
-        // Check which union type was returned
-        if (result?.post) {
-          // PostActionSuccess
-          return { platform, success: true, postId: result.post.id };
-        } else if (result?.message) {
-          // One of the error types
-          console.log(`Buffer ${platform} error type:`, result.type, result.message);
-          return { platform, success: false, error: `${result.type}: ${result.message}` };
-        } else if (result && Object.keys(result).length === 0) {
-          // Empty object — post created but fragment didn't match
-          // This means PostActionSuccess matched but post fields are restricted
-          return { platform, success: true, note: 'Post created (no ID returned)' };
-        }
-
-        return { platform, success: false, error: 'Unknown response: ' + JSON.stringify(result) };
-
-      } catch (err) {
-        return { platform, success: false, error: err.message };
       }
-    })
-  );
+    `}),
+  });
+  const data = await introRes.json();
+  const fields = data?.data?.postInputMetaData?.inputFields || [];
+  console.log('PostInputMetaData fields:', JSON.stringify(fields));
 
-  console.log('Final results:', JSON.stringify(results));
+  // Also introspect each nested type
+  const nestedTypes = fields
+    .map(f => f.type?.name || f.type?.ofType?.name || f.type?.ofType?.ofType?.name)
+    .filter(Boolean);
+  console.log('Nested types:', nestedTypes);
 
-  const succeeded = results.filter(r => r.success);
-  const failed = results.filter(r => !r.success);
+  // Introspect all nested types at once
+  const nestedQuery = nestedTypes.map((t, i) => `
+    type${i}: __type(name: "${t}") {
+      name
+      kind
+      inputFields { name type { name kind ofType { name } } }
+      enumValues { name }
+    }
+  `).join('\n');
 
-  if (succeeded.length > 0) {
-    return res.status(200).json({
-      success: true,
-      message: `Scheduled to ${succeeded.map(r => r.platform).join(', ')} successfully.`,
-      results,
-      scheduledAt,
-      failed: failed.length ? failed : undefined,
-    });
-  } else {
-    return res.status(500).json({ error: 'Failed to schedule to any platform', results });
-  }
+  const nestedRes = await fetch('https://api.buffer.com/graphql', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
+    body: JSON.stringify({ query: `query { ${nestedQuery} }` }),
+  });
+  const nestedData = await nestedRes.json();
+  console.log('Nested types detail:', JSON.stringify(nestedData?.data));
+
+  return res.status(200).json({ debug: true, fields, nestedData: nestedData?.data });
 };
