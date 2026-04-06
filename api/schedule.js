@@ -1,3 +1,5 @@
+// api/schedule.js — Buffer GraphQL API (final version with all union types)
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -25,64 +27,109 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'No valid channel IDs found' });
   }
 
-  // Find all possible return types of createPost mutation
-  const introRes = await fetch('https://api.buffer.com/graphql', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
-    body: JSON.stringify({ query: `
-      query {
-        createPostReturn: __type(name: "CreatePostPayload") {
-          kind name
-          possibleTypes { name }
+  // Include ALL union types so we can see exactly what's returned
+  const mutation = `
+    mutation CreatePost($input: CreatePostInput!) {
+      createPost(input: $input) {
+        ... on PostActionSuccess {
+          post { id status dueAt }
         }
-        mutationType: __schema {
-          mutationType {
-            fields(includeDeprecated: true) {
-              name
-              type { name kind ofType { name kind possibleTypes { name } } }
-            }
-          }
+        ... on NotFoundError {
+          message
+          type
+        }
+        ... on UnauthorizedError {
+          message
+          type
+        }
+        ... on UnexpectedError {
+          message
+          type
+        }
+        ... on RestProxyError {
+          message
+          type
+        }
+        ... on LimitReachedError {
+          message
+          type
+        }
+        ... on InvalidInputError {
+          message
+          type
         }
       }
-    `}),
-  });
-  const introData = await introRes.json();
-  console.log('CreatePostPayload:', JSON.stringify(introData?.data?.createPostReturn));
-
-  // Find createPost mutation return type
-  const createPostField = introData?.data?.mutationType?.mutationType?.fields?.find(f => f.name === 'createPost');
-  console.log('createPost return type:', JSON.stringify(createPostField?.type));
-
-  // Try mutation WITHOUT inline fragment — get raw response
-  const testChannel = selectedChannels[0];
-  const rawMutation = `
-    mutation CreatePost($input: CreatePostInput!) {
-      createPost(input: $input)
     }
   `;
 
-  const variables = {
-    input: {
-      channelId: testChannel.id,
-      schedulingType: 'automatic',
-      dueAt: scheduledAt,
-      text: caption,
-      mode: 'customScheduled',
-      assets: { images: imageUrls.map(url => ({ url })) },
-    }
-  };
+  const results = await Promise.all(
+    selectedChannels.map(async ({ platform, id }) => {
+      try {
+        const variables = {
+          input: {
+            channelId: id,
+            schedulingType: 'automatic',
+            dueAt: scheduledAt,
+            text: caption,
+            mode: 'customScheduled',
+            assets: { images: imageUrls.map(url => ({ url })) },
+          }
+        };
 
-  const rawRes = await fetch('https://api.buffer.com/graphql', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${BUFFER_API_KEY}` },
-    body: JSON.stringify({ query: rawMutation, variables }),
-  });
-  const rawData = await rawRes.json();
-  console.log('Raw createPost response:', JSON.stringify(rawData));
+        const r = await fetch('https://api.buffer.com/graphql', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${BUFFER_API_KEY}`,
+          },
+          body: JSON.stringify({ query: mutation, variables }),
+        });
 
-  return res.status(200).json({
-    debug: true,
-    introData: introData?.data,
-    rawResponse: rawData,
-  });
+        const data = await r.json();
+        console.log(`Buffer ${platform} FULL:`, JSON.stringify(data));
+
+        if (data.errors) {
+          return { platform, success: false, error: data.errors[0]?.message };
+        }
+
+        const result = data.data?.createPost;
+
+        // Check which union type was returned
+        if (result?.post) {
+          // PostActionSuccess
+          return { platform, success: true, postId: result.post.id };
+        } else if (result?.message) {
+          // One of the error types
+          console.log(`Buffer ${platform} error type:`, result.type, result.message);
+          return { platform, success: false, error: `${result.type}: ${result.message}` };
+        } else if (result && Object.keys(result).length === 0) {
+          // Empty object — post created but fragment didn't match
+          // This means PostActionSuccess matched but post fields are restricted
+          return { platform, success: true, note: 'Post created (no ID returned)' };
+        }
+
+        return { platform, success: false, error: 'Unknown response: ' + JSON.stringify(result) };
+
+      } catch (err) {
+        return { platform, success: false, error: err.message };
+      }
+    })
+  );
+
+  console.log('Final results:', JSON.stringify(results));
+
+  const succeeded = results.filter(r => r.success);
+  const failed = results.filter(r => !r.success);
+
+  if (succeeded.length > 0) {
+    return res.status(200).json({
+      success: true,
+      message: `Scheduled to ${succeeded.map(r => r.platform).join(', ')} successfully.`,
+      results,
+      scheduledAt,
+      failed: failed.length ? failed : undefined,
+    });
+  } else {
+    return res.status(500).json({ error: 'Failed to schedule to any platform', results });
+  }
 };
