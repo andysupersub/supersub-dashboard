@@ -205,6 +205,13 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .sched-status.success{background:#eafaf1;color:#1a7a4a;display:block;}
 .sched-status.error{background:#fff3f3;color:#c0392b;display:block;}
 
+/* ── MOBILE BOTTOM TAB BAR ── */
+.mobile-tabs{display:none;position:fixed;bottom:0;left:0;right:0;height:60px;background:var(--navy);border-top:1px solid rgba(255,255,255,0.08);z-index:300;align-items:stretch;}
+.mobile-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;color:rgba(255,255,255,0.45);font-size:10px;font-weight:200;letter-spacing:-0.01em;border:none;background:none;font-family:'Inter',sans-serif;transition:color 0.15s;}
+.mobile-tab.active{color:#fff;}
+.mobile-tab.active .mob-icon{color:var(--blue);}
+.mob-icon{font-size:16px;line-height:1;}
+
 /* ── FOOTER ── */
 footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 
@@ -220,6 +227,8 @@ footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(-
 }
 @media(max-width:700px){
   .sidebar{display:none;}
+  .mobile-tabs{display:flex;}
+  .main{padding-bottom:60px;}
   .topbar{padding:0 16px;}
   .filter-bar{padding:0 16px;}
   .stats-bar{padding:14px 16px;flex-direction:column;align-items:flex-start;gap:12px;}
@@ -523,6 +532,9 @@ function switchView(view) {
   document.getElementById('nav-videos').classList.toggle('active', view === 'videos');
   document.getElementById('topbar-title').textContent = view === 'carousels' ? 'Carousels' : 'Videos';
   document.getElementById('topbar-ratio').textContent = view === 'carousels' ? '4:5' : '9:16';
+  document.getElementById('mob-tab-carousels').classList.toggle('active', view === 'carousels');
+  document.getElementById('mob-tab-videos').classList.toggle('active', view === 'videos');
+  window.scrollTo(0, 0);
 }
 
 /* ── CAROUSEL CARD ── */
@@ -918,6 +930,26 @@ async function init() {
 }
 init();
 </script>
+
+<!-- ═══ MOBILE BOTTOM TABS ═══ -->
+<nav class="mobile-tabs">
+  <button class="mobile-tab active" id="mob-tab-carousels" onclick="switchView('carousels')">
+    <span class="mob-icon">&#9783;</span>
+    Carousels
+  </button>
+  <button class="mobile-tab" id="mob-tab-videos" onclick="switchView('videos')">
+    <span class="mob-icon">&#9654;</span>
+    Videos
+  </button>
+  <button class="mobile-tab" id="mob-tab-schedule" onclick="">
+    <span class="mob-icon">&#128197;</span>
+    Schedule
+  </button>
+  <button class="mobile-tab" id="mob-tab-analytics" onclick="">
+    <span class="mob-icon">&#128202;</span>
+    Analytics
+  </button>
+</nav>
 
 </body>
 </html>
