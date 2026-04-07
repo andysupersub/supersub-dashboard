@@ -56,6 +56,16 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .stat-n{font-size:26px;font-weight:500;letter-spacing:-0.05em;color:var(--navy);line-height:1;}
 .stat-l{font-size:10px;font-weight:200;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.04em;}
 
+/* ── FILTER BAR ── */
+.filter-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:46px;display:flex;align-items:center;gap:6px;flex-shrink:0;overflow-x:auto;}
+.filter-bar::-webkit-scrollbar{display:none;}
+.month-pill{padding:5px 13px;border-radius:20px;font-size:11px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);background:var(--white);white-space:nowrap;transition:all 0.15s;letter-spacing:-0.01em;}
+.month-pill:hover{border-color:var(--blue);color:var(--blue);}
+.month-pill.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.month-pill.all.active{background:var(--blue);border-color:var(--blue);}
+.month-pill-count{font-size:9px;opacity:0.6;margin-left:3px;}
+.card.hidden,.video-card.hidden{display:none;}
+
 /* ── GRID ── */
 .grid-wrap{padding:24px 28px;max-width:1400px;width:100%;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
@@ -211,6 +221,7 @@ footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(-
 @media(max-width:700px){
   .sidebar{display:none;}
   .topbar{padding:0 16px;}
+  .filter-bar{padding:0 16px;}
   .stats-bar{padding:14px 16px;flex-direction:column;align-items:flex-start;gap:12px;}
   .stats{gap:18px;}
   .stat{text-align:left;}
@@ -228,6 +239,7 @@ footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(-
 }
 @media(min-width:701px) and (max-width:1024px){
   .sidebar{width:180px;min-width:180px;}
+  .filter-bar{padding:0 22px;}
   .grid{grid-template-columns:repeat(3,1fr);}
   .grid-916{grid-template-columns:repeat(4,1fr);}
   .grid-wrap{padding:18px 22px;}
@@ -294,11 +306,13 @@ footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(-
           <div class="stat"><div class="stat-n" id="stat-comments">—</div><div class="stat-l">Comments</div></div>
         </div>
       </div>
+      <div class="filter-bar" id="c-filter-bar" style="display:none;"></div>
       <div class="grid-wrap">
         <div class="error-box" id="c-error-box"></div>
         <div class="loading" id="c-loading"><div class="spinner"></div>Loading carousels...</div>
         <div class="grid" id="c-grid" style="display:none;"></div>
         <div class="empty" id="c-empty" style="display:none;"><h3>No carousels yet</h3><p>Add your first carousel to Supabase and it'll appear here.</p></div>
+        <div class="empty" id="c-filter-empty" style="display:none;"><h3>No posts this month</h3><p>Nothing added yet for this period.</p></div>
       </div>
     </div>
 
@@ -314,11 +328,13 @@ footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(-
           <div class="stat"><div class="stat-n" id="stat-video-comments">—</div><div class="stat-l">Comments</div></div>
         </div>
       </div>
+      <div class="filter-bar" id="v-filter-bar" style="display:none;"></div>
       <div class="grid-wrap">
         <div class="error-box" id="v-error-box"></div>
         <div class="loading" id="v-loading"><div class="spinner"></div>Loading videos...</div>
         <div class="grid-916" id="v-grid" style="display:none;"></div>
         <div class="empty" id="v-empty" style="display:none;"><h3>No videos yet</h3><p>Add your first video to Supabase and it'll appear here.</p></div>
+        <div class="empty" id="v-filter-empty" style="display:none;"><h3>No videos this month</h3><p>Nothing added yet for this period.</p></div>
       </div>
     </div>
 
@@ -774,9 +790,55 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight') goSlide(slideIdx+1);
 });
 
+/* ── MONTH FILTER ── */
+const monthName = key => {
+  const [y,m] = key.split('-');
+  return new Date(+y, +m-1, 1).toLocaleDateString('en-NZ',{month:'short',year:'numeric'});
+};
+
+function buildFilterBar(barId, gridSelector, filterEmptyId, items) {
+  const bar = document.getElementById(barId);
+  if(!items.length){ bar.style.display='none'; return; }
+  const monthMap = {};
+  items.forEach(item => {
+    const d = new Date(item.created_at);
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    monthMap[key] = (monthMap[key]||0) + 1;
+  });
+  const months = Object.keys(monthMap).sort((a,b)=>b.localeCompare(a));
+  const total = items.length;
+  bar.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.className = 'month-pill all active';
+  allBtn.innerHTML = `All <span class="month-pill-count">${total}</span>`;
+  allBtn.onclick = () => applyFilter(barId, gridSelector, filterEmptyId, 'all', allBtn);
+  bar.appendChild(allBtn);
+  months.forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'month-pill';
+    btn.innerHTML = `${monthName(key)} <span class="month-pill-count">${monthMap[key]}</span>`;
+    btn.onclick = () => applyFilter(barId, gridSelector, filterEmptyId, key, btn);
+    bar.appendChild(btn);
+  });
+  bar.style.display='flex';
+}
+
+function applyFilter(barId, gridSelector, filterEmptyId, month, activeBtn) {
+  document.querySelectorAll(`#${barId} .month-pill`).forEach(p=>p.classList.remove('active'));
+  activeBtn.classList.add('active');
+  const cards = document.querySelectorAll(gridSelector);
+  let visible = 0;
+  cards.forEach(card => {
+    const show = month === 'all' || card.dataset.month === month;
+    card.classList.toggle('hidden', !show);
+    if(show) visible++;
+  });
+  const fe = document.getElementById(filterEmptyId);
+  fe.style.display = visible === 0 ? 'block' : 'none';
+}
+
 /* ── INIT ── */
 async function init() {
-  // Set default active nav
   document.getElementById('nav-carousels').classList.add('active');
 
   // Load carousels
@@ -786,7 +848,7 @@ async function init() {
   const cErr = document.getElementById('c-error-box');
   try {
     const [carousels,slides,comments] = await Promise.all([
-      apiFetch('carousels2?select=*&order=folder_number.asc'),
+      apiFetch('carousels2?select=*&order=created_at.desc'),
       apiFetch('slides2?select=*&order=carousel_id.asc,slide_order.asc'),
       apiFetch('comments2?select=*&order=created_at.asc')
     ]);
@@ -799,7 +861,14 @@ async function init() {
     if(!carousels.length){ cEmpty.style.display='block'; }
     else {
       cGrid.style.display='grid';
-      carousels.forEach(c=>{ const s=slides.filter(sl=>sl.carousel_id===c.id).sort((a,b)=>a.slide_order-b.slide_order); cGrid.appendChild(buildCarouselCard(c,s)); });
+      carousels.forEach(c=>{
+        const s=slides.filter(sl=>sl.carousel_id===c.id).sort((a,b)=>a.slide_order-b.slide_order);
+        const card = buildCarouselCard(c,s);
+        const d = new Date(c.created_at);
+        card.dataset.month = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        cGrid.appendChild(card);
+      });
+      buildFilterBar('c-filter-bar', '#c-grid .card', 'c-filter-empty', carousels);
     }
   } catch(e) {
     cLoad.style.display='none'; cErr.style.display='block';
@@ -810,7 +879,6 @@ async function init() {
   const vLoad = document.getElementById('v-loading');
   const vGrid = document.getElementById('v-grid');
   const vEmpty = document.getElementById('v-empty');
-  const vErr = document.getElementById('v-error-box');
   try {
     const [videos,videoComments] = await Promise.all([
       apiFetch('videos?select=*&order=created_at.desc'),
@@ -823,10 +891,18 @@ async function init() {
     document.getElementById('sb-comments').textContent = D.comments.length + videoComments.length;
     vLoad.style.display='none';
     if(!videos.length){ vEmpty.style.display='block'; }
-    else { vGrid.style.display='grid'; videos.forEach(v=>vGrid.appendChild(buildVideoCard(v))); }
+    else {
+      vGrid.style.display='grid';
+      videos.forEach(v=>{
+        const card = buildVideoCard(v);
+        const d = new Date(v.created_at);
+        card.dataset.month = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+        vGrid.appendChild(card);
+      });
+      buildFilterBar('v-filter-bar', '#v-grid .video-card', 'v-filter-empty', videos);
+    }
   } catch(e) {
     vLoad.style.display='none';
-    // videos table may not exist yet — show empty state gracefully
     vEmpty.style.display='block';
     vEmpty.querySelector('h3').textContent = 'Videos table not set up yet';
     vEmpty.querySelector('p').textContent = 'Run the SQL setup in Supabase to enable video uploads.';
