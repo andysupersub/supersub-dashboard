@@ -23,9 +23,11 @@ module.exports = async function handler(req, res) {
 
   const BUFFER_API_KEY = process.env.BUFFER_API_KEY;
   const CHANNEL_IDS = {
-    instagram: process.env.BUFFER_INSTAGRAM_ID,
-    facebook:  process.env.BUFFER_FACEBOOK_ID,
-    tiktok:    process.env.BUFFER_TIKTOK_ID,
+    instagram:  process.env.BUFFER_INSTAGRAM_ID,
+    facebook:   process.env.BUFFER_FACEBOOK_ID,
+    tiktok:     process.env.BUFFER_TIKTOK_ID,
+    linkedin:   process.env.BUFFER_LINKEDIN_ID,
+    pinterest:  process.env.BUFFER_PINTEREST_ID,
   };
 
   const selectedChannels = platforms
@@ -60,6 +62,10 @@ module.exports = async function handler(req, res) {
           metadata = { instagram: { type: 'post', shouldShareToFeed: true } };
         } else if (platform === 'facebook') {
           metadata = { facebook: { type: 'post' } };
+        } else if (platform === 'linkedin') {
+          metadata = { linkedin: { type: 'post' } };
+        } else if (platform === 'pinterest') {
+          metadata = { pinterest: { type: 'pin' } };
         }
 
         // Build assets — video post uses video asset if available, otherwise falls back to images
