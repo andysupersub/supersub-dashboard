@@ -139,6 +139,7 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .tag{font-size:10px;font-weight:500;padding:3px 9px;border-radius:20px;border:1px solid var(--border);color:var(--navy);background:var(--mist);letter-spacing:-0.01em;}
 .detail-label{font-size:10px;font-weight:600;letter-spacing:0.08em;color:var(--muted);text-transform:uppercase;margin-bottom:7px;}
 .caption-text{font-size:12px;line-height:1.75;font-weight:200;color:var(--text);white-space:pre-wrap;margin-bottom:22px;border-left:2px solid var(--blue);padding-left:12px;}
+.script-text{font-size:12px;line-height:1.75;font-weight:200;color:var(--text);white-space:pre-wrap;margin-bottom:22px;border-left:2px solid var(--navy);padding:10px 12px 10px 14px;background:var(--mist);border-radius:0 6px 6px 0;}
 .comments-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:180px;overflow-y:auto;}
 .comment-item{background:var(--mist);border-radius:7px;padding:9px 11px;}
 .comment-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
@@ -424,6 +425,8 @@ footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(-
       <div class="vmodal-right">
         <div class="modal-detail" style="flex:1;overflow:hidden;">
           <div class="modal-detail-scroll" id="vmodal-scroll">
+            <div class="detail-label">Script</div>
+            <div class="script-text" id="vmodal-script"></div>
             <div class="detail-label">Caption</div>
             <div class="caption-text" id="vmodal-caption"></div>
             <div class="detail-label">Feedback (<span id="vmodal-cc">0</span>)</div>
@@ -641,6 +644,15 @@ function openVModal(id) {
      <span class="vtag">9:16</span>
      ${video.duration_seconds ? `<span class="vtag">${fmtDur(video.duration_seconds)}</span>` : ''}
      <span class="vtag">${fmtDate(video.created_at)}</span>`;
+  const scriptEl = document.getElementById('vmodal-script');
+  if(video.script) {
+    scriptEl.textContent = video.script;
+    scriptEl.previousElementSibling.style.display = '';
+    scriptEl.style.display = '';
+  } else {
+    scriptEl.previousElementSibling.style.display = 'none';
+    scriptEl.style.display = 'none';
+  }
   document.getElementById('vmodal-caption').textContent = video.caption || '';
   // reset video player
   const vidEl = document.getElementById('vmodal-video');
