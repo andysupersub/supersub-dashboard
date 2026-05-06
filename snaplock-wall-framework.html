@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snaplock Wall — Content Framework | SuperSub Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#011648; --blue:#276ce9; --mist:#f0f4fd;
+  --white:#ffffff; --gray:#f2f3f5;
+  --border:rgba(1,22,72,0.1); --text:#011648; --muted:#7a8aaa;
+
+  /* Pillar colours */
+  --p1:#1565c0; --p1l:#e3f2fd;
+  --p2:#d84315; --p2l:#fbe9e7;
+  --p3:#2e7d32; --p3l:#e8f5e9;
+  --p4:#6a1b9a; --p4l:#f3e5f5;
+  --p5:#e65100; --p5l:#fff3e0;
+
+  /* Category colours */
+  --c1:#00897b; --c1l:#e0f2f1;
+  --c2:#1a3c6e; --c2l:#e8edf5;
+  --c3:#e53935; --c3l:#ffebee;
+  --c4:#fb8c00; --c4l:#fff3e0;
+  --c5:#7b1fa2; --c5l:#f3e5f5;
+  --c6:#2e7d32; --c6l:#e8f5e9;
+  --c7:#546e7a; --c7l:#eceff1;
+  --c8:#c62828; --c8l:#fce4ec;
+  --c9:#f57f17; --c9l:#fff8e1;
+  --c10:#00695c; --c10l:#e0f2f1;
+  --c11:#5e35b1; --c11l:#ede7f6;
+  --c12:#4caf50; --c12l:#f1f8e9;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+/* ── APP SHELL ── */
+.app-shell{display:flex;flex:1;min-height:0;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;min-width:220px;background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sidebar-logo{padding:20px 20px 12px;font-size:18px;font-weight:500;letter-spacing:-0.05em;color:#fff;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:8px;}
+.sidebar-logo span{color:var(--blue);}
+.sidebar-section{padding:8px 12px 4px;font-size:10px;font-weight:600;letter-spacing:0.08em;color:rgba(255,255,255,0.35);text-transform:uppercase;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:1px 8px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:200;color:rgba(255,255,255,0.65);transition:all 0.15s;letter-spacing:-0.01em;text-decoration:none;}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.nav-item.active{background:rgba(39,108,233,0.2);color:#fff;font-weight:500;}
+.nav-item.active .nav-icon{color:var(--blue);}
+.nav-icon{font-size:14px;width:18px;text-align:center;}
+.nav-divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:10px 16px;}
+.sidebar-stats{padding:16px;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);}
+.sidebar-stat{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px;font-weight:200;color:rgba(255,255,255,0.45);}
+.sidebar-stat b{color:rgba(255,255,255,0.7);font-weight:500;}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-title{font-size:15px;font-weight:500;letter-spacing:-0.03em;color:var(--navy);}
+.ratio-badge{font-size:10px;font-weight:500;padding:3px 8px;border-radius:20px;background:var(--mist);color:var(--blue);border:1px solid rgba(39,108,233,0.2);letter-spacing:0.01em;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.channel-label{font-size:11px;font-weight:200;color:var(--muted);}
+
+/* ── STATS BAR ── */
+.stats-bar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.stats-bar-left h1{font-size:20px;font-weight:500;letter-spacing:-0.05em;color:var(--navy);margin-bottom:2px;}
+.stats-bar-left p{font-size:12px;font-weight:200;color:var(--muted);}
+.stats{display:flex;gap:24px;}
+.stat{text-align:right;}
+.stat-n{font-size:26px;font-weight:500;letter-spacing:-0.05em;color:var(--navy);line-height:1;}
+.stat-l{font-size:10px;font-weight:200;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.04em;}
+
+/* ── CONTENT AREA ── */
+.content-area{padding:24px 28px 48px;overflow-y:auto;flex:1;}
+
+/* ── TABS ── */
+.fw-tabs{display:flex;gap:4px;border-bottom:2px solid rgba(1,22,72,0.1);margin-bottom:24px;}
+.fw-tab{padding:10px 20px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;letter-spacing:-0.02em;cursor:pointer;background:transparent;border:none;color:rgba(1,22,72,0.4);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;border-radius:4px 4px 0 0;}
+.fw-tab:hover{color:var(--navy);background:rgba(1,22,72,0.03);}
+.fw-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.fw-panel{display:none;}.fw-panel.active{display:block;}
+
+/* ── MIX BAR ── */
+.mix-section{background:var(--navy);border-radius:10px;padding:20px 24px;margin-bottom:24px;}
+.mix-title{font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px;}
+.mix-bar{display:flex;border-radius:6px;overflow:hidden;height:32px;margin-bottom:10px;}
+.mix-seg{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.mix-pct{font-size:11px;font-weight:500;color:#fff;}
+.mix-name{font-size:8px;font-weight:500;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.4px;}
+
+/* ── CATEGORY GRID ── */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.cat-card{background:var(--white);border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:0 2px 8px rgba(1,22,72,0.05);}
+.cat-hdr{padding:11px 15px;display:flex;align-items:center;gap:8px;}
+.cat-icon{font-size:13px;}
+.cat-name{font-size:11px;font-weight:500;color:#fff;flex:1;letter-spacing:-0.01em;}
+.cat-count{font-size:9px;background:rgba(255,255,255,0.2);color:#fff;padding:2px 6px;border-radius:20px;font-weight:500;}
+.cat-body{padding:10px 13px 12px;}
+.sub-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#aaa;margin:7px 0 4px;}
+.sub-lbl:first-child{margin-top:0;}
+.tags{display:flex;flex-wrap:wrap;gap:3px;}
+.tag{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:500;}
+
+/* ── PILLAR CARDS ── */
+.p-nav{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.p-tab{padding:7px 14px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;border:2px solid transparent;font-family:'Inter',sans-serif;letter-spacing:-0.01em;transition:all .15s;}
+.p-tab.active{color:#fff!important;}
+.pillar-card{background:var(--white);border-radius:10px;padding:22px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(1,22,72,0.05);display:none;}
+.pillar-card.active{display:block;}
+.pc-top{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;}
+.pc-badge{padding:5px 14px;border-radius:6px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:#fff;white-space:nowrap;}
+.pc-name{font-size:18px;font-weight:500;letter-spacing:-0.04em;color:var(--navy);margin-bottom:3px;}
+.pc-tag{font-size:12px;font-weight:200;color:#666;line-height:1.5;font-style:italic;}
+.obj-box{border-radius:7px;padding:12px 16px;margin-bottom:18px;border-left:4px solid;}
+.obj-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;}
+.obj-text{font-size:12px;font-weight:200;color:#333;line-height:1.6;}
+.pc-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.pc-slbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#aaa;margin-bottom:7px;}
+.stags{display:flex;flex-wrap:wrap;gap:4px;}
+.stag{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500;}
+.tone-tag{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:200;background:var(--mist);color:var(--navy);}
+.ideas-list{display:flex;flex-direction:column;gap:4px;margin-bottom:18px;}
+.idea-li{font-size:12px;font-weight:200;color:#333;padding:8px 12px;background:var(--mist);border-radius:5px;line-height:1.4;}
+.idea-li::before{content:"→ ";color:#aaa;}
+.ratio-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--mist);border-radius:7px;}
+.ratio-lbl{font-size:11px;font-weight:500;min-width:100px;color:#555;}
+.ratio-wrap{flex:1;height:7px;background:#ddd;border-radius:4px;overflow:hidden;}
+.ratio-fill{height:100%;border-radius:4px;}
+.ratio-pct{font-size:14px;font-weight:500;min-width:36px;text-align:right;letter-spacing:-0.03em;}
+
+/* ── MAPPING ── */
+.map-col{display:flex;flex-direction:column;gap:8px;}
+.map-row{background:var(--white);border-radius:8px;padding:14px 18px;border:1px solid var(--border);}
+.map-pname{font-size:13px;font-weight:500;letter-spacing:-0.02em;margin-bottom:8px;}
+.map-cats{display:flex;flex-wrap:wrap;gap:5px;}
+.map-cat{font-size:10px;padding:3px 9px;border-radius:4px;font-weight:500;}
+
+/* ── IDEAS BANK ── */
+.filter-row{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;align-items:center;}
+.flbl{font-size:11px;font-weight:500;color:#666;}
+.fbtn{padding:5px 13px;border-radius:20px;font-size:10px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--white);color:var(--navy);font-family:'Inter',sans-serif;transition:all .15s;}
+.fbtn:hover{background:var(--mist);}
+.fbtn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.search-input{padding:7px 15px;border-radius:20px;border:1.5px solid var(--border);font-family:'Inter',sans-serif;font-size:12px;font-weight:200;outline:none;width:200px;color:var(--navy);background:var(--white);}
+.search-input:focus{border-color:var(--blue);}
+.ideas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.idea-card{background:var(--white);border-radius:7px;padding:12px 14px;border:1px solid var(--border);transition:transform .15s,box-shadow .15s;}
+.idea-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(1,22,72,0.09);}
+.ic-pillar{font-size:8px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;padding:2px 7px;border-radius:3px;display:inline-block;margin-bottom:7px;color:#fff;}
+.ic-cat{font-size:9px;font-weight:200;color:#aaa;margin-bottom:5px;}
+.ic-text{font-size:11px;font-weight:200;color:#333;line-height:1.5;}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:18px;}
+.sh-title{font-size:17px;font-weight:500;letter-spacing:-0.04em;color:var(--navy);}
+.sh-count{font-size:12px;font-weight:200;color:#aaa;}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:20px;font-size:11px;font-weight:200;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.sidebar{width:180px;min-width:180px;} .cat-grid{grid-template-columns:repeat(2,1fr);} .ideas-grid{grid-template-columns:repeat(2,1fr);} .pc-two{grid-template-columns:1fr;}}
+@media(max-width:700px){.sidebar{display:none;} .content-area{padding:16px;} .cat-grid,.ideas-grid{grid-template-columns:1fr;} .mix-bar .mix-name{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">Super<span>Sub</span></div>
+
+    <div style="height:8px;"></div>
+    <div class="sidebar-section">Content</div>
+    <a href="index.html" class="nav-item">
+      <span class="nav-icon">&#9783;</span> Carousels
+    </a>
+    <a href="index.html" class="nav-item">
+      <span class="nav-icon">&#9654;</span> Videos
+    </a>
+
+    <hr class="nav-divider">
+    <div class="sidebar-section">Publish</div>
+    <a href="index.html" class="nav-item">
+      <span class="nav-icon">&#128197;</span> Schedule
+    </a>
+    <a href="index.html" class="nav-item">
+      <span class="nav-icon">&#128202;</span> Analytics
+    </a>
+
+    <hr class="nav-divider">
+    <div class="sidebar-section">Strategy</div>
+    <a href="snaplock-wall-framework.html" class="nav-item active">
+      <span class="nav-icon">&#129521;</span> Snaplock Wall
+    </a>
+    <a href="sip-panel-framework.html" class="nav-item">
+      <span class="nav-icon">&#127959;</span> SIP Panel
+    </a>
+
+    <div class="sidebar-stats">
+      <div class="sidebar-stat"><span>Categories</span><b>12</b></div>
+      <div class="sidebar-stat"><span>Pillars</span><b>5</b></div>
+      <div class="sidebar-stat"><span>Ideas</span><b>120+</b></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">Snaplock Wall</div>
+        <span class="ratio-badge">Content Framework</span>
+      </div>
+      <div class="topbar-right">
+        <span class="channel-label">supersub.nz &middot; Strategy</span>
+      </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stats-bar-left">
+        <h1>Snaplock Wall — Content Framework</h1>
+        <p>12 categories, 5 pillars, 120+ topic ideas mapped to business objectives.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-n">12</div><div class="stat-l">Categories</div></div>
+        <div class="stat"><div class="stat-n">5</div><div class="stat-l">Pillars</div></div>
+        <div class="stat"><div class="stat-n">120+</div><div class="stat-l">Ideas</div></div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+      <!-- MIX BAR -->
+      <div class="mix-section">
+        <div class="mix-title">Recommended Monthly Content Mix</div>
+        <div class="mix-bar">
+          <div class="mix-seg" style="flex:25;background:var(--p1)"><div class="mix-pct">25%</div><div class="mix-name">Educate</div></div>
+          <div class="mix-seg" style="flex:15;background:var(--p2)"><div class="mix-pct">15%</div><div class="mix-name">Problem</div></div>
+          <div class="mix-seg" style="flex:25;background:var(--p3)"><div class="mix-pct">25%</div><div class="mix-name">Solution</div></div>
+          <div class="mix-seg" style="flex:20;background:var(--p4)"><div class="mix-pct">20%</div><div class="mix-name">Trust</div></div>
+          <div class="mix-seg" style="flex:15;background:var(--p5)"><div class="mix-pct">15%</div><div class="mix-name">Convert</div></div>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <span style="font-size:10px;font-weight:200;color:rgba(255,255,255,0.4);">Before scripting, ask: <em style="color:rgba(255,255,255,0.65)">"What is the purpose of this post?"</em> — the answer is always one of the 5 pillars above.</span>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="fw-tabs">
+        <button class="fw-tab active" onclick="showTab('cats',this)">📋 12 Categories</button>
+        <button class="fw-tab" onclick="showTab('pillars',this)">🎯 5 Pillars</button>
+        <button class="fw-tab" onclick="showTab('mapping',this)">🗺️ Category → Pillar Map</button>
+        <button class="fw-tab" onclick="showTab('ideas',this)">💡 Content Ideas Bank</button>
+      </div>
+
+      <!-- ════ CATEGORIES ════ -->
+      <div class="fw-panel active" id="cats">
+        <div class="sh"><div class="sh-title">12 Content Categories</div><div class="sh-count">120+ topic ideas</div></div>
+        <div class="cat-grid">
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c1)"><span class="cat-icon">🏆</span><span class="cat-name">BENEFITS</span><span class="cat-count">12</span></div><div class="cat-body"><div class="sub-lbl">Time & Speed</div><div class="tags"><span class="tag" style="background:var(--c1l);color:#00695c">Days not weeks</span><span class="tag" style="background:var(--c1l);color:#00695c">No trade sequencing</span><span class="tag" style="background:var(--c1l);color:#00695c">Simultaneous electrical</span><span class="tag" style="background:var(--c1l);color:#00695c">Back to normal fast</span></div><div class="sub-lbl">Financial</div><div class="tags"><span class="tag" style="background:var(--c1l);color:#00695c">Reusable moveable asset</span><span class="tag" style="background:var(--c1l);color:#00695c">No lease write-off</span><span class="tag" style="background:var(--c1l);color:#00695c">Fewer trades = fewer invoices</span><span class="tag" style="background:var(--c1l);color:#00695c">Lower disruption cost</span></div><div class="sub-lbl">Practical</div><div class="tags"><span class="tag" style="background:var(--c1l);color:#00695c">Pre-finished (no painting)</span><span class="tag" style="background:var(--c1l);color:#00695c">Professional finish day one</span><span class="tag" style="background:var(--c1l);color:#00695c">Reconfigurable any time</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c2)"><span class="cat-icon">⚙️</span><span class="cat-name">FEATURES</span><span class="cat-count">13</span></div><div class="cat-body"><div class="sub-lbl">Panel System</div><div class="tags"><span class="tag" style="background:var(--c2l);color:#1a3c6e">Interlocking rib-stiffened</span><span class="tag" style="background:var(--c2l);color:#1a3c6e">Pre-finished face sheets</span><span class="tag" style="background:var(--c2l);color:#1a3c6e">3 height options</span></div><div class="sub-lbl">Performance</div><div class="tags"><span class="tag" style="background:var(--c2l);color:#1a3c6e">Acoustic variant (Rw 55)</span><span class="tag" style="background:var(--c2l);color:#1a3c6e">Fire-rated variants</span><span class="tag" style="background:var(--c2l);color:#1a3c6e">60/60/60 intertenancy</span><span class="tag" style="background:var(--c2l);color:#1a3c6e">Very High wind zone</span></div><div class="sub-lbl">Versatility</div><div class="tags"><span class="tag" style="background:var(--c2l);color:#1a3c6e">Electrical cavity routing</span><span class="tag" style="background:var(--c2l);color:#1a3c6e">40kg fixing anywhere</span><span class="tag" style="background:var(--c2l);color:#1a3c6e">Demountable & reusable</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c3)"><span class="cat-icon">📐</span><span class="cat-name">TECHNICAL SPECS</span><span class="cat-count">14</span></div><div class="cat-body"><div class="sub-lbl">Dimensions</div><div class="tags"><span class="tag" style="background:var(--c3l);color:#b71c1c">Width 1204mm</span><span class="tag" style="background:var(--c3l);color:#b71c1c">Heights: 2404/3608/4050mm</span><span class="tag" style="background:var(--c3l);color:#b71c1c">Face sheet 15mm</span><span class="tag" style="background:var(--c3l);color:#b71c1c">Ribs 65mm @ 400mm</span><span class="tag" style="background:var(--c3l);color:#b71c1c">5mm edge clearance</span></div><div class="sub-lbl">Structural</div><div class="tags"><span class="tag" style="background:var(--c3l);color:#b71c1c">Non load-bearing</span><span class="tag" style="background:var(--c3l);color:#b71c1c">Wind zone: Very High</span><span class="tag" style="background:var(--c3l);color:#b71c1c">Single stud ≤5m²</span></div><div class="sub-lbl">Materials</div><div class="tags"><span class="tag" style="background:var(--c3l);color:#b71c1c">Triboard: Group 3 fire</span><span class="tag" style="background:var(--c3l);color:#b71c1c">Fibrecement: Group 1S</span><span class="tag" style="background:var(--c3l);color:#b71c1c">Acoustic: Rw 55</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c4)"><span class="cat-icon">🔧</span><span class="cat-name">INSTALLATION</span><span class="cat-count">12</span></div><div class="cat-body"><div class="sub-lbl">Install Steps</div><div class="tags"><span class="tag" style="background:var(--c4l);color:#e65100">Perimeter plate setup</span><span class="tag" style="background:var(--c4l);color:#e65100">Panel interlock sequence</span><span class="tag" style="background:var(--c4l);color:#e65100">Cutting on site</span><span class="tag" style="background:var(--c4l);color:#e65100">Sealant on tongue edge</span></div><div class="sub-lbl">Openings & Services</div><div class="tags"><span class="tag" style="background:var(--c4l);color:#e65100">Door framing process</span><span class="tag" style="background:var(--c4l);color:#e65100">Head trimmer install</span><span class="tag" style="background:var(--c4l);color:#e65100">Electrical cavity routing</span></div><div class="sub-lbl">Tools & Skills</div><div class="tags"><span class="tag" style="background:var(--c4l);color:#e65100">Track saw + drill</span><span class="tag" style="background:var(--c4l);color:#e65100">Basic carpentry only</span><span class="tag" style="background:var(--c4l);color:#e65100">Removal & reinstall</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c5)"><span class="cat-icon">🏢</span><span class="cat-name">USE CASES</span><span class="cat-count">14</span></div><div class="cat-body"><div class="sub-lbl">Office</div><div class="tags"><span class="tag" style="background:var(--c5l);color:#4a148c">Open plan → private</span><span class="tag" style="background:var(--c5l);color:#4a148c">Meeting rooms</span><span class="tag" style="background:var(--c5l);color:#4a148c">Reception</span><span class="tag" style="background:var(--c5l);color:#4a148c">Acoustic focus zones</span></div><div class="sub-lbl">Commercial</div><div class="tags"><span class="tag" style="background:var(--c5l);color:#4a148c">Retail fit-out</span><span class="tag" style="background:var(--c5l);color:#4a148c">Clinic / healthcare</span><span class="tag" style="background:var(--c5l);color:#4a148c">Industrial offices</span><span class="tag" style="background:var(--c5l);color:#4a148c">Education rooms</span></div><div class="sub-lbl">Property</div><div class="tags"><span class="tag" style="background:var(--c5l);color:#4a148c">Multi-tenancy building</span><span class="tag" style="background:var(--c5l);color:#4a148c">Franchise / multi-location</span><span class="tag" style="background:var(--c5l);color:#4a148c">Home studio</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c6)"><span class="cat-icon">🎯</span><span class="cat-name">TARGET MARKET</span><span class="cat-count">10</span></div><div class="cat-body"><div class="sub-lbl">Decision Makers</div><div class="tags"><span class="tag" style="background:var(--c6l);color:#1b5e20">Business owners on lease</span><span class="tag" style="background:var(--c6l);color:#1b5e20">Property investors</span><span class="tag" style="background:var(--c6l);color:#1b5e20">Property managers</span><span class="tag" style="background:var(--c6l);color:#1b5e20">Franchise operators</span></div><div class="sub-lbl">Professionals</div><div class="tags"><span class="tag" style="background:var(--c6l);color:#1b5e20">Interior designers</span><span class="tag" style="background:var(--c6l);color:#1b5e20">Fit-out contractors</span><span class="tag" style="background:var(--c6l);color:#1b5e20">Architects</span><span class="tag" style="background:var(--c6l);color:#1b5e20">Commercial builders</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c7)"><span class="cat-icon">⚖️</span><span class="cat-name">COMPARISON</span><span class="cat-count">10</span></div><div class="cat-body"><div class="sub-lbl">vs Other Systems</div><div class="tags"><span class="tag" style="background:var(--c7l);color:#37474f">vs Standard framed wall</span><span class="tag" style="background:var(--c7l);color:#37474f">vs Glass partition</span><span class="tag" style="background:var(--c7l);color:#37474f">vs Moveable wall system</span><span class="tag" style="background:var(--c7l);color:#37474f">Demountable vs permanent</span></div><div class="sub-lbl">Cost</div><div class="tags"><span class="tag" style="background:var(--c7l);color:#37474f">Upfront vs total cost</span><span class="tag" style="background:var(--c7l);color:#37474f">5-year lease comparison</span><span class="tag" style="background:var(--c7l);color:#37474f">Reconfiguration cost</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c8)"><span class="cat-icon">🛡️</span><span class="cat-name">OBJECTION HANDLING</span><span class="cat-count">11</span></div><div class="cat-body"><div class="sub-lbl">Quality & Durability</div><div class="tags"><span class="tag" style="background:var(--c8l);color:#880e4f">"Does it feel solid?"</span><span class="tag" style="background:var(--c8l);color:#880e4f">"Will it look professional?"</span><span class="tag" style="background:var(--c8l);color:#880e4f">"How long does it last?"</span></div><div class="sub-lbl">Capability</div><div class="tags"><span class="tag" style="background:var(--c8l);color:#880e4f">"Can I hang things?" (40kg)</span><span class="tag" style="background:var(--c8l);color:#880e4f">"Does sound block?" (Rw 55)</span><span class="tag" style="background:var(--c8l);color:#880e4f">"Can WiFi pass through?"</span></div><div class="sub-lbl">Regulatory</div><div class="tags"><span class="tag" style="background:var(--c8l);color:#880e4f">"Does it need consent?"</span><span class="tag" style="background:var(--c8l);color:#880e4f">"Is it fire compliant?"</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c9)"><span class="cat-icon">💰</span><span class="cat-name">FINANCIAL & ROI</span><span class="cat-count">10</span></div><div class="cat-body"><div class="sub-lbl">Cost Arguments</div><div class="tags"><span class="tag" style="background:var(--c9l);color:#e65100">Upfront vs framed wall</span><span class="tag" style="background:var(--c9l);color:#e65100">True 5-year cost</span><span class="tag" style="background:var(--c9l);color:#e65100">Business downtime cost</span></div><div class="sub-lbl">Asset Value</div><div class="tags"><span class="tag" style="background:var(--c9l);color:#e65100">Retained asset at lease end</span><span class="tag" style="background:var(--c9l);color:#e65100">Reconfiguration savings</span><span class="tag" style="background:var(--c9l);color:#e65100">Multi-location savings</span></div><div class="sub-lbl">Investor Lens</div><div class="tags"><span class="tag" style="background:var(--c9l);color:#e65100">Landlord ROI (20yr view)</span><span class="tag" style="background:var(--c9l);color:#e65100">Tenant changeover savings</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c10)"><span class="cat-icon">📋</span><span class="cat-name">COMPLIANCE</span><span class="cat-count">9</span></div><div class="cat-body"><div class="sub-lbl">NZ Building Code</div><div class="tags"><span class="tag" style="background:var(--c10l);color:#004d40">NZBC scope (internal)</span><span class="tag" style="background:var(--c10l);color:#004d40">Non-load-bearing class</span><span class="tag" style="background:var(--c10l);color:#004d40">When consent required</span><span class="tag" style="background:var(--c10l);color:#004d40">When NOT required</span></div><div class="sub-lbl">Fire & Acoustic</div><div class="tags"><span class="tag" style="background:var(--c10l);color:#004d40">Fire group ratings</span><span class="tag" style="background:var(--c10l);color:#004d40">60/60/60 intertenancy</span><span class="tag" style="background:var(--c10l);color:#004d40">Acoustic standards NZ</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c11)"><span class="cat-icon">🎨</span><span class="cat-name">DESIGN & AESTHETICS</span><span class="cat-count">9</span></div><div class="cat-body"><div class="sub-lbl">Visual</div><div class="tags"><span class="tag" style="background:var(--c11l);color:#311b92">Pre-finished surface options</span><span class="tag" style="background:var(--c11l);color:#311b92">Paint compatibility</span><span class="tag" style="background:var(--c11l);color:#311b92">Integration with glass</span></div><div class="sub-lbl">Layout</div><div class="tags"><span class="tag" style="background:var(--c11l);color:#311b92">Room size planning</span><span class="tag" style="background:var(--c11l);color:#311b92">Corner & T-junction</span><span class="tag" style="background:var(--c11l);color:#311b92">Height options</span></div><div class="sub-lbl">Acoustic Design</div><div class="tags"><span class="tag" style="background:var(--c11l);color:#311b92">Acoustic covering install</span><span class="tag" style="background:var(--c11l);color:#311b92">Rw 55 layout planning</span></div></div></div>
+
+          <div class="cat-card"><div class="cat-hdr" style="background:var(--c12)"><span class="cat-icon">🌿</span><span class="cat-name">SUSTAINABILITY</span><span class="cat-count">7</span></div><div class="cat-body"><div class="sub-lbl">Materials</div><div class="tags"><span class="tag" style="background:var(--c12l);color:#1b5e20">Timber-based = renewable</span><span class="tag" style="background:var(--c12l);color:#1b5e20">Low embodied carbon</span></div><div class="sub-lbl">Lifecycle</div><div class="tags"><span class="tag" style="background:var(--c12l);color:#1b5e20">Zero demolition waste</span><span class="tag" style="background:var(--c12l);color:#1b5e20">Reusable = less consumption</span><span class="tag" style="background:var(--c12l);color:#1b5e20">Reduced site waste</span><span class="tag" style="background:var(--c12l);color:#1b5e20">Long panel lifespan</span></div><div class="sub-lbl">NZ</div><div class="tags"><span class="tag" style="background:var(--c12l);color:#1b5e20">NZ-made product</span></div></div></div>
+
+        </div>
+      </div>
+
+      <!-- ════ PILLARS ════ -->
+      <div class="fw-panel" id="pillars">
+        <div class="sh"><div class="sh-title">5 Content Pillars</div><div class="sh-count">Every script belongs to one pillar</div></div>
+
+        <div class="p-nav">
+          <button class="p-tab active" style="background:var(--p1l);color:var(--p1);border-color:var(--p1)" onclick="showPillar(1,this)">🎓 Pillar 1</button>
+          <button class="p-tab" style="background:var(--p2l);color:var(--p2);border-color:var(--p2)" onclick="showPillar(2,this)">😤 Pillar 2</button>
+          <button class="p-tab" style="background:var(--p3l);color:var(--p3);border-color:var(--p3)" onclick="showPillar(3,this)">✅ Pillar 3</button>
+          <button class="p-tab" style="background:var(--p4l);color:var(--p4);border-color:var(--p4)" onclick="showPillar(4,this)">🛡️ Pillar 4</button>
+          <button class="p-tab" style="background:var(--p5l);color:var(--p5);border-color:var(--p5)" onclick="showPillar(5,this)">🎯 Pillar 5</button>
+        </div>
+
+        <div class="pillar-card active" id="pc1">
+          <div class="pc-top"><div class="pc-badge" style="background:var(--p1)">Pillar 1</div><div><div class="pc-name">EDUCATE THE MARKET</div><div class="pc-tag">"Most people haven't heard of Snaplock Wall. Teach them before you sell them anything."</div></div></div>
+          <div class="obj-box" style="border-color:var(--p1);background:var(--p1l)"><div class="obj-label" style="color:var(--p1)">🎯 Business Objective</div><div class="obj-text">Build product awareness. Turn strangers into people who know what Snaplock Wall is, how it works, and that SuperSub makes it. Reach matters more than conversion here.</div></div>
+          <div class="pc-two"><div><div class="pc-slbl">Categories</div><div class="stags"><span class="stag" style="background:var(--p1l);color:var(--p1)">Features</span><span class="stag" style="background:var(--p1l);color:var(--p1)">Technical Specs</span><span class="stag" style="background:var(--p1l);color:var(--p1)">Installation</span><span class="stag" style="background:var(--p1l);color:var(--p1)">Design</span><span class="stag" style="background:var(--p1l);color:var(--p1)">Use Cases</span></div></div><div><div class="pc-slbl">Tone</div><div class="stags"><span class="tone-tag">Curious & revealing</span><span class="tone-tag">Educational</span><span class="tone-tag">Visual-led</span></div></div></div>
+          <div class="pc-slbl">Best Content Ideas</div>
+          <div class="ideas-list"><div class="idea-li">What's actually inside a Snaplock Wall panel?</div><div class="idea-li">The 5-step installation walkthrough</div><div class="idea-li">How electrical cables route through the panel cavity on day one</div><div class="idea-li">3 height options — which ceiling needs which?</div><div class="idea-li">What "demountable" actually means in everyday practice</div><div class="idea-li">Where Snaplock works: office, clinic, school, home studio, retail</div></div>
+          <div class="ratio-row"><div class="ratio-lbl">Monthly mix</div><div class="ratio-wrap"><div class="ratio-fill" style="width:25%;background:var(--p1)"></div></div><div class="ratio-pct" style="color:var(--p1)">25%</div></div>
+        </div>
+
+        <div class="pillar-card" id="pc2">
+          <div class="pc-top"><div class="pc-badge" style="background:var(--p2)">Pillar 2</div><div><div class="pc-name">EXPOSE THE PROBLEM</div><div class="pc-tag">"Make them feel the pain of the old way before offering anything better."</div></div></div>
+          <div class="obj-box" style="border-color:var(--p2);background:var(--p2l)"><div class="obj-label" style="color:var(--p2)">🎯 Business Objective</div><div class="obj-text">Create urgency and dissatisfaction with the status quo. Content here makes the viewer realise they have a problem they hadn't consciously acknowledged.</div></div>
+          <div class="pc-two"><div><div class="pc-slbl">Categories</div><div class="stags"><span class="stag" style="background:var(--p2l);color:var(--p2)">Comparison (problem)</span><span class="stag" style="background:var(--p2l);color:var(--p2)">Financial (hidden costs)</span><span class="stag" style="background:var(--p2l);color:var(--p2)">Target Market pain</span></div></div><div><div class="pc-slbl">Tone</div><div class="stags"><span class="tone-tag">Empathetic</span><span class="tone-tag">Relatable story</span><span class="tone-tag">Direct & honest</span></div></div></div>
+          <div class="pc-slbl">Best Content Ideas</div>
+          <div class="ideas-list"><div class="idea-li">Why every fit-out in NZ takes longer than quoted</div><div class="idea-li">You spent tens of thousands on a fit-out. Your lease ended. What happened?</div><div class="idea-li">The hidden cost of 6-week business disruption during fit-out</div><div class="idea-li">5 situations where standard framed walls are the wrong choice</div><div class="idea-li">The make-good clause most people never read until they are moving out</div></div>
+          <div class="ratio-row"><div class="ratio-lbl">Monthly mix</div><div class="ratio-wrap"><div class="ratio-fill" style="width:15%;background:var(--p2)"></div></div><div class="ratio-pct" style="color:var(--p2)">15%</div></div>
+        </div>
+
+        <div class="pillar-card" id="pc3">
+          <div class="pc-top"><div class="pc-badge" style="background:var(--p3)">Pillar 3</div><div><div class="pc-name">PROVE THE SOLUTION</div><div class="pc-tag">"Now they know the problem — show clearly why Snaplock Wall is the answer."</div></div></div>
+          <div class="obj-box" style="border-color:var(--p3);background:var(--p3l)"><div class="obj-label" style="color:var(--p3)">🎯 Business Objective</div><div class="obj-text">Drive consideration and preference. Let numbers and outcomes speak. This is where most conversions are built.</div></div>
+          <div class="pc-two"><div><div class="pc-slbl">Categories</div><div class="stags"><span class="stag" style="background:var(--p3l);color:var(--p3)">Benefits</span><span class="stag" style="background:var(--p3l);color:var(--p3)">Comparison (solution)</span><span class="stag" style="background:var(--p3l);color:var(--p3)">Financial & ROI</span><span class="stag" style="background:var(--p3l);color:var(--p3)">Use Cases (success)</span></div></div><div><div class="pc-slbl">Tone</div><div class="stags"><span class="tone-tag">Confident</span><span class="tone-tag">Evidence-led</span><span class="tone-tag">Outcome-focused</span></div></div></div>
+          <div class="pc-slbl">Best Content Ideas</div>
+          <div class="ideas-list"><div class="idea-li">Standard framed vs Snaplock: honest 5-year total cost</div><div class="idea-li">Your fit-out should be a reusable asset, not a write-off</div><div class="idea-li">4-day office fit-out — the honest day-by-day</div><div class="idea-li">We have proven our system is up to 60% faster</div><div class="idea-li">Business downtime: the cost most fit-out quotes never include</div></div>
+          <div class="ratio-row"><div class="ratio-lbl">Monthly mix</div><div class="ratio-wrap"><div class="ratio-fill" style="width:25%;background:var(--p3)"></div></div><div class="ratio-pct" style="color:var(--p3)">25%</div></div>
+        </div>
+
+        <div class="pillar-card" id="pc4">
+          <div class="pc-top"><div class="pc-badge" style="background:var(--p4)">Pillar 4</div><div><div class="pc-name">BUILD TRUST</div><div class="pc-tag">"NZ buyers need confidence before they spend. Kill doubt with compliance and honest answers."</div></div></div>
+          <div class="obj-box" style="border-color:var(--p4);background:var(--p4l)"><div class="obj-label" style="color:var(--p4)">🎯 Business Objective</div><div class="obj-text">Remove the final hesitation before enquiry. Answer the questions people are too afraid to ask. NZ buyers need Building Code compliance, fire ratings, and honest objection handling.</div></div>
+          <div class="pc-two"><div><div class="pc-slbl">Categories</div><div class="stags"><span class="stag" style="background:var(--p4l);color:var(--p4)">Objection Handling</span><span class="stag" style="background:var(--p4l);color:var(--p4)">Compliance</span><span class="stag" style="background:var(--p4l);color:var(--p4)">Sustainability</span><span class="stag" style="background:var(--p4l);color:var(--p4)">Technical (credibility)</span></div></div><div><div class="pc-slbl">Tone</div><div class="stags"><span class="tone-tag">Honest, no spin</span><span class="tone-tag">Direct Q&A</span><span class="tone-tag">Evidence-backed</span></div></div></div>
+          <div class="pc-slbl">Best Content Ideas</div>
+          <div class="ideas-list"><div class="idea-li">"Does Snaplock Wall need consent in NZ?" — the honest answer</div><div class="idea-li">Fire ratings: Group 3 standard vs Group 1S acoustic</div><div class="idea-li">"Does it feel solid?" — What clients say after 6 months</div><div class="idea-li">"Can WiFi pass through it?" (yes — non-metallic)</div><div class="idea-li">60/60/60 intertenancy: when you need it and how it works</div></div>
+          <div class="ratio-row"><div class="ratio-lbl">Monthly mix</div><div class="ratio-wrap"><div class="ratio-fill" style="width:20%;background:var(--p4)"></div></div><div class="ratio-pct" style="color:var(--p4)">20%</div></div>
+        </div>
+
+        <div class="pillar-card" id="pc5">
+          <div class="pc-top"><div class="pc-badge" style="background:var(--p5)">Pillar 5</div><div><div class="pc-name">CONVERT TO ACTION</div><div class="pc-tag">"Speak to a specific person with a specific project. Make the next step feel easy and low-risk."</div></div></div>
+          <div class="obj-box" style="border-color:var(--p5);background:var(--p5l)"><div class="obj-label" style="color:var(--p5)">🎯 Business Objective</div><div class="obj-text">Generate enquiries, quote requests, and consultations. Highly specific content targeting a defined person. Clear CTA, low friction, never pushy.</div></div>
+          <div class="pc-two"><div><div class="pc-slbl">Categories</div><div class="stags"><span class="stag" style="background:var(--p5l);color:var(--p5)">Target Market (specific)</span><span class="stag" style="background:var(--p5l);color:var(--p5)">Financial ROI (bottom)</span><span class="stag" style="background:var(--p5l);color:var(--p5)">Use Cases (decision)</span></div></div><div><div class="pc-slbl">Tone</div><div class="stags"><span class="tone-tag">Direct & personal</span><span class="tone-tag">Audience call-out</span><span class="tone-tag">Low-friction CTA</span></div></div></div>
+          <div class="pc-slbl">Best Content Ideas</div>
+          <div class="ideas-list"><div class="idea-li">If your lease is up in the next 12 months — do this first</div><div class="idea-li">Commercial property owners: run these numbers first</div><div class="idea-li">5 questions to ask before signing any partition quote</div><div class="idea-li">Franchise businesses: why Snaplock makes multi-site cheaper</div><div class="idea-li">Scope your fit-out in one conversation — DM us WALLS</div></div>
+          <div class="ratio-row"><div class="ratio-lbl">Monthly mix</div><div class="ratio-wrap"><div class="ratio-fill" style="width:15%;background:var(--p5)"></div></div><div class="ratio-pct" style="color:var(--p5)">15%</div></div>
+        </div>
+      </div>
+
+      <!-- ════ MAPPING ════ -->
+      <div class="fw-panel" id="mapping">
+        <div class="sh"><div class="sh-title">Category → Pillar Map</div><div class="sh-count">Which categories belong to which pillar</div></div>
+        <div class="map-col">
+          <div class="map-row"><div class="map-pname" style="color:var(--p1)">🎓 Pillar 1 — EDUCATE (25%)</div><div class="map-cats"><span class="map-cat" style="background:var(--c2l);color:var(--c2)">⚙️ Features</span><span class="map-cat" style="background:var(--c3l);color:var(--c3)">📐 Technical Specs</span><span class="map-cat" style="background:var(--c4l);color:var(--c4)">🔧 Installation</span><span class="map-cat" style="background:var(--c11l);color:var(--c11)">🎨 Design</span><span class="map-cat" style="background:var(--c5l);color:var(--c5)">🏢 Use Cases</span></div></div>
+          <div class="map-row"><div class="map-pname" style="color:var(--p2)">😤 Pillar 2 — PROBLEM (15%)</div><div class="map-cats"><span class="map-cat" style="background:var(--c7l);color:var(--c7)">⚖️ Comparison (problem)</span><span class="map-cat" style="background:var(--c9l);color:var(--c9)">💰 Financial (hidden)</span><span class="map-cat" style="background:var(--c6l);color:var(--c6)">🎯 Target Market pain</span></div></div>
+          <div class="map-row"><div class="map-pname" style="color:var(--p3)">✅ Pillar 3 — SOLUTION (25%)</div><div class="map-cats"><span class="map-cat" style="background:var(--c1l);color:var(--c1)">🏆 Benefits</span><span class="map-cat" style="background:var(--c7l);color:var(--c7)">⚖️ Comparison (solution)</span><span class="map-cat" style="background:var(--c9l);color:var(--c9)">💰 Financial & ROI</span><span class="map-cat" style="background:var(--c5l);color:var(--c5)">🏢 Use Cases (success)</span><span class="map-cat" style="background:var(--c12l);color:var(--c12)">🌿 Sustainability</span></div></div>
+          <div class="map-row"><div class="map-pname" style="color:var(--p4)">🛡️ Pillar 4 — TRUST (20%)</div><div class="map-cats"><span class="map-cat" style="background:var(--c8l);color:var(--c8)">🛡️ Objection Handling</span><span class="map-cat" style="background:var(--c10l);color:var(--c10)">📋 Compliance</span><span class="map-cat" style="background:var(--c12l);color:var(--c12)">🌿 Sustainability</span><span class="map-cat" style="background:var(--c3l);color:var(--c3)">📐 Technical (credibility)</span></div></div>
+          <div class="map-row"><div class="map-pname" style="color:var(--p5)">🎯 Pillar 5 — CONVERT (15%)</div><div class="map-cats"><span class="map-cat" style="background:var(--c6l);color:var(--c6)">🎯 Target Market (specific)</span><span class="map-cat" style="background:var(--c9l);color:var(--c9)">💰 Financial ROI (bottom)</span><span class="map-cat" style="background:var(--c5l);color:var(--c5)">🏢 Use Cases (decision)</span></div></div>
+        </div>
+      </div>
+
+      <!-- ════ IDEAS BANK ════ -->
+      <div class="fw-panel" id="ideas">
+        <div class="sh"><div class="sh-title">Content Ideas Bank</div><div class="sh-count" id="ideas-count">120+ ideas</div></div>
+        <div class="filter-row">
+          <span class="flbl">Filter:</span>
+          <button class="fbtn active" onclick="filterIdeas('all',this)">All</button>
+          <button class="fbtn" onclick="filterIdeas('p1',this)" style="border-color:var(--p1);color:var(--p1)">🎓 Educate</button>
+          <button class="fbtn" onclick="filterIdeas('p2',this)" style="border-color:var(--p2);color:var(--p2)">😤 Problem</button>
+          <button class="fbtn" onclick="filterIdeas('p3',this)" style="border-color:var(--p3);color:var(--p3)">✅ Solution</button>
+          <button class="fbtn" onclick="filterIdeas('p4',this)" style="border-color:var(--p4);color:var(--p4)">🛡️ Trust</button>
+          <button class="fbtn" onclick="filterIdeas('p5',this)" style="border-color:var(--p5);color:var(--p5)">🎯 Convert</button>
+          <input class="search-input" type="text" placeholder="Search ideas..." oninput="searchIdeas(this.value)"/>
+        </div>
+        <div class="ideas-grid" id="ideas-grid"></div>
+      </div>
+
+    </div><!-- end content-area -->
+
+    <footer>SuperSub Limited &middot; supersub.co.nz &middot; Content Dashboard</footer>
+  </div>
+</div>
+
+<script>
+// Tab switching
+function showTab(id, btn) {
+  document.querySelectorAll('.fw-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.fw-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Pillar switching
+function showPillar(n, btn) {
+  document.querySelectorAll('.pillar-card').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.p-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('pc'+n).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Ideas data
+const ideas = [
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Features',t:"What's actually inside a Snaplock Wall panel? The complete material reveal"},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Installation',t:'The 5-step installation process — simple enough for anyone to understand'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Technical Specs',t:'3 height options explained — which ceiling height needs which panel?'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Features',t:'How electrical cables route through the panel cavity during install'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Features',t:'What "demountable" actually means in everyday practical terms'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Technical Specs',t:'Panel specs: 1204mm wide, 15mm face, Rw 55 acoustic, 40kg fixing'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Use Cases',t:'Where Snaplock Wall works: office, clinic, school, home studio, retail'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Design',t:'How Snaplock integrates with glass elements and existing architecture'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Installation',t:'Cutting panels on site — what tools you actually need'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Features',t:'The acoustic version vs standard: when do you need which?'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Technical Specs',t:'Understanding Rw 55 — what 55 decibels means for room privacy'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Installation',t:'Door opening framing process — head trimmer and vertical studs explained'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Design',t:'Corner and T-junction details — how panels connect at angles'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Features',t:'Fire ratings: Group 3 Triboard vs Group 1S fibrecement face'},
+  {p:'p1',pn:'Educate',pc:'#1565c0',cat:'Installation',t:'Repair and maintenance — what to do if a panel gets damaged'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Comparison',t:'Why every NZ fit-out takes longer than quoted — the trade sequencing problem'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Financial',t:'You spent tens of thousands on a fit-out. Your lease ended. What happened?'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Financial',t:'The hidden cost of business disruption during a 4–6 week fit-out'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Financial',t:'Why reconfiguring a standard wall costs $15K–$40K each time'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Target Market',t:'5 situations where standard framed walls are genuinely the wrong choice'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Target Market',t:'The make-good clause most business owners never read until they are moving out'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Comparison',t:'Why standard partition walls lock you into one layout — and what that costs'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Financial',t:'How traditional fit-outs leave money in buildings you leave behind'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Target Market',t:'Commercial property investors: why every tenant changeover costs a fortune'},
+  {p:'p2',pn:'Problem',pc:'#d84315',cat:'Comparison',t:'Standard acoustic partition: 35–40dB — why that is not enough for real privacy'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Comparison',t:'Standard framed vs Snaplock: honest 5-year total cost comparison'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Benefits',t:'Your fit-out should be a reusable moveable asset, not a sunk cost'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Use Cases',t:'4-day office fit-out: the honest day-by-day play-by-play'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Financial',t:'Commercial landlords: how Snaplock saves significantly over 20 years'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Financial',t:'Business downtime: the cost most fit-out quotes never include'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Benefits',t:'We have proven our pre-finished panel system is up to 60% faster'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Benefits',t:'Same professional finish. One crew. Days not weeks. That is Snaplock.'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Comparison',t:'Snaplock vs glass partition: which actually makes sense for NZ offices?'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Use Cases',t:'Two businesses, same goal, different systems — the story of the difference'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Benefits',t:'Pre-finished means no painter, no stopper. The wall is ready day one.'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Benefits',t:'One sequence, one crew: how Snaplock eliminates waiting between trades'},
+  {p:'p3',pn:'Solution',pc:'#2e7d32',cat:'Sustainability',t:'Demountable = zero demolition waste. The sustainable fit-out choice.'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Compliance',t:'"Does Snaplock Wall need building consent in NZ?" — the complete honest answer'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Compliance',t:'Fire ratings in plain English: Group 3 standard vs Group 1S acoustic panels'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Objection Handling',t:'"Does it feel solid?" — What clients actually say after 6 months of use'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Compliance',t:'Is Snaplock Wall NZ Building Code compliant? The full factual answer'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Objection Handling',t:'"Can WiFi signals pass through it?" (yes — non-metallic material)'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Compliance',t:'60/60/60 intertenancy wall system: when you need it and how it works'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Objection Handling',t:'"Can I hang a 55-inch TV on it?" — yes. Here is exactly how'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Objection Handling',t:'"What if a panel gets damaged?" — repair vs replace explained'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Compliance',t:'When consent IS required and when it is NOT — the NZ guide'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Objection Handling',t:'"Will it look professional or temporary?" — the honest visual answer'},
+  {p:'p4',pn:'Trust',pc:'#6a1b9a',cat:'Objection Handling',t:'"Can I add doors later?" — opening modifications after installation'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Target Market',t:'If your commercial lease is up in 12 months — do this first'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Financial',t:'Commercial property owners: run these numbers before your next fit-out'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Target Market',t:'5 questions to ask before signing any interior partition quote'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Use Cases',t:'Franchise businesses: why Snaplock makes multi-site rollout cheaper'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Use Cases',t:'Healthcare clinics fitting out in 2026 — what to know about acoustic options'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Target Market',t:'Scope your Snaplock Wall fit-out in one conversation — DM us WALLS'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Target Market',t:'Interior designers: Snaplock Wall specs for your next commercial project'},
+  {p:'p5',pn:'Convert',pc:'#e65100',cat:'Use Cases',t:'Your space could look completely different by end of week — let us show you'},
+];
+
+let curFilter = 'all', curSearch = '';
+
+function renderIdeas() {
+  const filtered = ideas.filter(i => {
+    const mp = curFilter === 'all' || i.p === curFilter;
+    const ms = curSearch === '' || i.t.toLowerCase().includes(curSearch.toLowerCase()) || i.cat.toLowerCase().includes(curSearch.toLowerCase()) || i.pn.toLowerCase().includes(curSearch.toLowerCase());
+    return mp && ms;
+  });
+  document.getElementById('ideas-count').textContent = filtered.length + ' ideas';
+  document.getElementById('ideas-grid').innerHTML = filtered.map(i =>
+    `<div class="idea-card"><div class="ic-pillar" style="background:${i.pc}">${i.pn}</div><div class="ic-cat">${i.cat}</div><div class="ic-text">${i.t}</div></div>`
+  ).join('');
+}
+
+function filterIdeas(p, btn) {
+  curFilter = p;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderIdeas();
+}
+
+function searchIdeas(v) { curSearch = v; renderIdeas(); }
+
+renderIdeas();
+</script>
+</body>
+</html>
