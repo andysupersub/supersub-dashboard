@@ -4,14 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SuperSub — Meta Ads Plan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#011648;--blue:#276ce9;--mist:#f0f4fd;--white:#fff;--gray:#f2f3f5;--border:rgba(1,22,72,0.1);--text:#011648;--muted:#7a8aaa;--green:#1a7a4a;--red:#c0392b;--yellow:#b07d00;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
 .app-shell{display:flex;flex:1;min-height:0;}
+/* Sidebar */
 .sidebar{width:220px;min-width:220px;background:var(--navy);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
 .sidebar-logo{padding:20px 20px 12px;font-size:18px;font-weight:500;letter-spacing:-0.05em;color:#fff;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:8px;}
 .sidebar-logo span{color:var(--blue);}
@@ -19,18 +18,17 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:1px 8px;border-radius:7px;cursor:pointer;font-size:13px;font-weight:200;color:rgba(255,255,255,0.65);transition:all 0.15s;text-decoration:none;}
 .nav-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
 .nav-item.active{background:rgba(39,108,233,0.2);color:#fff;font-weight:500;}
-.nav-item.active .nav-icon{color:var(--blue);}
 .nav-icon{font-size:14px;width:18px;text-align:center;}
 .nav-divider{border:none;border-top:1px solid rgba(255,255,255,0.08);margin:10px 16px;}
 .sidebar-stats{padding:16px;margin-top:auto;border-top:1px solid rgba(255,255,255,0.08);}
 .sidebar-stat{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:11px;font-weight:200;color:rgba(255,255,255,0.45);}
 .sidebar-stat b{color:rgba(255,255,255,0.7);font-weight:500;}
+/* Main */
 .main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
-.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:100;}
-.topbar-left{display:flex;align-items:center;gap:10px;}
-.topbar-title{font-size:15px;font-weight:500;letter-spacing:-0.03em;color:var(--navy);}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-title{font-size:15px;font-weight:500;letter-spacing:-0.03em;}
 .topbar-sub{font-size:11px;font-weight:200;color:var(--muted);}
-.create-btn{display:flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:opacity 0.2s;}
+.create-btn{display:flex;align-items:center;gap:6px;background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;}
 .create-btn:hover{opacity:0.85;}
 /* Table */
 .table-wrap{padding:20px 28px;flex:1;overflow:hidden;display:flex;flex-direction:column;}
@@ -40,21 +38,13 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .ads-table{width:100%;min-width:900px;border-collapse:collapse;background:var(--white);}
 .ads-table thead tr{background:var(--navy);}
 .ads-table th{padding:11px 14px;font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.55);text-align:left;white-space:nowrap;}
-.ads-table th:last-child{text-align:right;}
 .ads-table td{padding:11px 14px;font-size:12px;font-weight:200;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;}
 .ads-table tr:last-child td{border-bottom:none;}
 .ads-table tr:hover td{background:#f8f9fd;}
-/* Row types */
-.row-planned-adset td{background:#fafbff;padding-left:0;}
-.row-planned-adset td:first-child{padding-left:14px;}
-.row-planned-adset:hover td{background:#f3f5fc!important;}
-.row-planned-ad td{background:#f8f9fb;}
-.row-planned-ad td:first-child{padding-left:28px;}
-.row-planned-ad:hover td{background:#f0f2f8!important;}
-/* Campaign left border */
 .row-campaign td:first-child{border-left:3px solid var(--blue);}
-.row-planned-adset td:first-child{border-left:3px solid rgba(39,108,233,0.3);}
-/* Name cell */
+.row-planned-adset td{background:#fafbff;}.row-planned-adset td:first-child{padding-left:14px;border-left:3px solid rgba(39,108,233,0.3);}
+.row-planned-adset:hover td{background:#f3f5fc!important;}
+.row-planned-ad td{background:#f8f9fb;}.row-planned-ad td:first-child{padding-left:28px;}
 .name-cell{display:flex;align-items:center;gap:7px;}
 .row-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px;font-weight:500;}
 .row-planned-adset .row-name{font-weight:400;}
@@ -63,7 +53,6 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .expand-btn:hover{background:var(--mist);}
 .expand-btn.expanded{transform:rotate(90deg);}
 .no-expand{width:18px;display:inline-block;flex-shrink:0;}
-/* Badges */
 .obj-badge{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:0.03em;text-transform:uppercase;flex-shrink:0;}
 .obj-leads{background:rgba(26,122,74,0.12);color:#1a7a4a;}
 .obj-sales{background:rgba(39,108,233,0.12);color:#276ce9;}
@@ -75,7 +64,6 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .status-draft{background:rgba(120,120,120,0.1);color:#666;}
 .status-in_review{background:rgba(176,125,0,0.12);color:#b07d00;}
 .status-approved{background:rgba(26,122,74,0.12);color:#1a7a4a;}
-/* Action buttons */
 .action-btn{background:none;border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:10px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;color:var(--muted);transition:all 0.15s;white-space:nowrap;}
 .action-btn:hover{border-color:var(--blue);color:var(--blue);}
 .action-btn.submit{border-color:var(--yellow);color:var(--yellow);}
@@ -90,15 +78,17 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:8px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .empty-row td{text-align:center;padding:60px;color:var(--muted);font-size:12px;}
-/* Create/Edit Modal */
-.overlay{display:none;position:fixed;inset:0;background:rgba(1,22,72,0.65);z-index:500;align-items:flex-start;justify-content:center;padding:40px 20px;backdrop-filter:blur(3px);overflow-y:auto;}
+
+/* ═══ CREATE MODAL ═══ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(1,22,72,0.65);z-index:500;align-items:flex-start;justify-content:center;padding:30px 20px;backdrop-filter:blur(3px);overflow-y:auto;}
 .overlay.open{display:flex;}
-.modal{background:var(--white);border-radius:16px;width:100%;max-width:620px;overflow:hidden;box-shadow:0 24px 80px rgba(1,22,72,0.3);margin:auto;}
+.modal{background:var(--gray);border-radius:16px;width:100%;max-width:720px;overflow:hidden;box-shadow:0 24px 80px rgba(1,22,72,0.3);margin:auto;}
 .modal-header{background:var(--navy);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;}
-.modal-header h3{font-size:14px;font-weight:500;color:#fff;letter-spacing:-0.03em;}
+.modal-header h3{font-size:14px;font-weight:500;color:#fff;}
 .modal-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
 /* Step indicator */
-.step-indicator{display:flex;align-items:center;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--gray);}
+.step-indicator{display:flex;align-items:center;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--white);}
 .step-dot{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:200;color:var(--muted);}
 .step-dot.active{color:var(--blue);font-weight:500;}
 .step-dot.done{color:var(--green);}
@@ -107,62 +97,136 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .step-dot.done .step-circle{border-color:var(--green);background:var(--green);color:#fff;}
 .step-line{flex:1;height:1px;background:var(--border);margin:0 8px;}
 .step-line.done{background:var(--green);}
-.step-content{padding:24px;max-height:60vh;overflow-y:auto;}
-.step-title{font-size:15px;font-weight:500;letter-spacing:-0.03em;margin-bottom:20px;color:var(--navy);}
-.step-subtitle{font-size:12px;font-weight:200;color:var(--muted);margin-bottom:20px;margin-top:-14px;}
-/* Objective grid */
+
+/* Step content */
+.step-content{padding:20px 24px;max-height:65vh;overflow-y:auto;}
+
+/* ── SECTION CARDS ── */
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:12px;}
+.section-header{display:flex;align-items:center;gap:9px;margin-bottom:14px;}
+.section-check{width:20px;height:20px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;flex-shrink:0;}
+.section-title-text{font-size:14px;font-weight:500;color:var(--navy);}
+.section-info{margin-left:auto;font-size:14px;color:var(--muted);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;}
+.section-divider{border:none;border-top:1px solid var(--border);margin:12px 0;}
+
+/* Detail rows */
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;}
+.detail-row+.detail-row{border-top:1px solid var(--border);}
+.detail-key{font-weight:200;color:var(--muted);}
+.detail-val{font-weight:400;color:var(--text);}
+
+/* Budget strategy cards */
+.budget-strategy-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.bstrat-card{border:2px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all 0.15s;background:var(--white);}
+.bstrat-card:hover{border-color:var(--blue);}
+.bstrat-card.selected{border-color:var(--blue);background:var(--mist);}
+.bstrat-card input{display:none;}
+.bstrat-title{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:3px;}
+.bstrat-desc{font-size:11px;font-weight:200;color:var(--muted);line-height:1.4;}
+
+/* Currency input */
+.currency-wrap{display:flex;align-items:stretch;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--white);}
+.currency-prefix{padding:9px 12px;background:var(--gray);font-size:12px;color:var(--muted);border-right:1px solid var(--border);display:flex;align-items:center;}
+.currency-main{flex:1;border:none;outline:none;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;color:var(--text);background:var(--white);}
+.currency-suffix{padding:9px 12px;background:var(--gray);font-size:12px;color:var(--muted);border-left:1px solid var(--border);display:flex;align-items:center;}
+
+/* Field styles */
+.field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
+.field-group:last-child{margin-bottom:0;}
+.field-label{font-size:12px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:5px;}
+.field-label-optional{font-size:11px;font-weight:200;color:var(--muted);}
+.field-hint{font-size:11px;font-weight:200;color:var(--muted);line-height:1.4;margin-top:2px;}
+.field-input{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-weight:200;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;background:var(--white);}
+.field-input:focus{border-color:var(--blue);}
+.field-select{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-weight:200;font-family:'Inter',sans-serif;color:var(--text);outline:none;background:var(--white);cursor:pointer;}
+.field-textarea{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-weight:200;font-family:'Inter',sans-serif;color:var(--text);outline:none;resize:none;height:70px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* iOS toggle */
+.toggle-field{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+.toggle-field+.toggle-field{border-top:1px solid var(--border);}
+.toggle-field-left .toggle-field-label{font-size:13px;font-weight:400;color:var(--text);}
+.toggle-field-left .toggle-field-desc{font-size:11px;font-weight:200;color:var(--muted);margin-top:2px;}
+.ios-toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+.ios-toggle input{display:none;}
+.ios-slider{position:absolute;inset:0;border-radius:24px;background:#ccc;transition:background 0.2s;cursor:pointer;}
+.ios-slider::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+.ios-toggle input:checked + .ios-slider{background:var(--blue);}
+.ios-toggle input:checked + .ios-slider::after{transform:translateX(20px);}
+
+/* Conversion location */
+.conv-group-label{padding:6px 12px 4px;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;background:var(--gray);border-bottom:1px solid var(--border);}
+.conv-option{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border);transition:background 0.1s;background:var(--white);}
+.conv-option:last-child{border-bottom:none;}
+.conv-option:hover{background:var(--mist);}
+.conv-option input[type=radio]{width:16px;height:16px;accent-color:var(--blue);flex-shrink:0;}
+.conv-option-label{flex:1;}
+.conv-rec{font-size:9px;font-weight:600;padding:2px 6px;background:rgba(26,122,74,0.1);color:var(--green);border-radius:4px;}
+.conv-location-wrap{border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+
+/* Audience section */
+.audience-field{padding:10px 0;border-bottom:1px solid var(--border);}
+.audience-field:last-child{border-bottom:none;}
+.audience-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.gender-options{display:flex;gap:10px;margin-top:6px;}
+.gender-opt{flex:1;border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;font-size:12px;font-weight:400;cursor:pointer;text-align:center;transition:all 0.15s;}
+.gender-opt.selected{border-color:var(--blue);color:var(--blue);background:var(--mist);}
+.age-row{display:flex;align-items:center;gap:10px;}
+.age-row span{font-size:12px;color:var(--muted);}
+
+/* Placement cards */
+.placement-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.placement-card{border:2px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:all 0.15s;background:var(--white);}
+.placement-card.selected{border-color:var(--blue);background:var(--mist);}
+.placement-card input{display:none;}
+.placement-title{font-size:12px;font-weight:500;color:var(--navy);}
+.placement-desc{font-size:11px;font-weight:200;color:var(--muted);margin-top:3px;}
+.placement-rec{font-size:9px;font-weight:600;color:var(--green);}
+
+/* Objectives grid */
 .objectives-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
 .obj-option{border:2px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all 0.15s;display:flex;align-items:flex-start;gap:12px;}
 .obj-option:hover{border-color:var(--blue);background:var(--mist);}
 .obj-option.selected{border-color:var(--blue);background:var(--mist);}
 .obj-option input{display:none;}
-.obj-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
-.obj-label-text{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:3px;}
-.obj-desc{font-size:11px;font-weight:200;color:var(--muted);line-height:1.4;}
-/* Fields */
-.field-group{display:flex;flex-direction:column;gap:5px;margin-bottom:14px;}
-.field-label{font-size:10px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--muted);}
-.field-input{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-weight:200;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:border-color 0.2s;background:var(--white);}
-.field-input:focus{border-color:var(--blue);}
-.field-textarea{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-weight:200;font-family:'Inter',sans-serif;color:var(--text);outline:none;resize:none;height:80px;transition:border-color 0.2s;}
-.field-textarea:focus{border-color:var(--blue);}
-.field-select{width:100%;border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;font-weight:200;font-family:'Inter',sans-serif;color:var(--text);outline:none;background:var(--white);cursor:pointer;}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.radio-row{display:flex;gap:16px;}
-.radio-row label{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:200;cursor:pointer;}
+.obj-icon{font-size:22px;flex-shrink:0;}
+.obj-lbl{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:3px;}
+.obj-dsc{font-size:11px;font-weight:200;color:var(--muted);line-height:1.4;}
+
 /* Review */
-.review-section{margin-bottom:18px;}
+.review-section{margin-bottom:16px;}
 .review-section-title{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
-.review-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;}
+.review-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid rgba(1,22,72,0.04);}
+.review-row:last-child{border-bottom:none;}
 .review-key{font-weight:200;color:var(--muted);}
-.review-val{font-weight:500;color:var(--navy);text-align:right;max-width:280px;}
+.review-val{font-weight:400;color:var(--text);text-align:right;max-width:300px;}
 .status-picker{display:flex;gap:8px;margin-top:8px;}
 .status-pick-btn{flex:1;padding:8px;border:2px solid var(--border);border-radius:7px;font-size:11px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;text-align:center;transition:all 0.15s;background:var(--white);}
 .status-pick-btn.sel-draft{border-color:#888;background:rgba(120,120,120,0.08);color:#555;}
 .status-pick-btn.sel-in_review{border-color:var(--yellow);background:rgba(176,125,0,0.08);color:var(--yellow);}
+
 /* Modal footer */
-.modal-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--white);}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--white);}
 .btn-back{background:none;border:1px solid var(--border);border-radius:7px;padding:8px 16px;font-size:12px;font-weight:200;cursor:pointer;color:var(--muted);font-family:'Inter',sans-serif;}
 .btn-next{background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-next:hover{opacity:0.85;}
 .btn-next:disabled{opacity:0.4;cursor:not-allowed;}
 .btn-save{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 24px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;}
-.btn-save:hover{opacity:0.85;}
-.btn-save:disabled{opacity:0.4;cursor:not-allowed;}
 .step-msg{font-size:11px;color:var(--red);font-style:italic;}
+
 /* Delete modal */
 .delete-modal{background:var(--white);border-radius:14px;max-width:400px;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(1,22,72,0.3);margin:auto;}
 .delete-modal-header{background:var(--red);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
 .delete-modal-header h3{font-size:14px;font-weight:500;color:#fff;}
-.delete-modal-body{padding:22px;font-size:13px;font-weight:200;color:var(--text);line-height:1.6;}
+.delete-modal-body{padding:22px;font-size:13px;font-weight:200;line-height:1.6;}
 .delete-modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
 .btn-del{background:var(--red);color:#fff;border:none;border-radius:7px;padding:8px 20px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;}
+
 footer{text-align:center;padding:20px;font-size:11px;font-weight:200;color:var(--muted);border-top:1px solid var(--border);background:var(--white);}
 </style>
 </head>
 <body>
 <div class="app-shell">
-
 <div class="sidebar">
   <div class="sidebar-logo">Super<span>Sub</span></div>
   <div style="height:8px"></div>
@@ -190,39 +254,32 @@ footer{text-align:center;padding:20px;font-size:11px;font-weight:200;color:var(-
 
 <div class="main">
   <div class="topbar">
-    <div class="topbar-left">
+    <div style="display:flex;align-items:center;gap:10px">
       <div class="topbar-title">Meta Ads Plan</div>
-      <span class="topbar-sub">Planned campaigns · Not connected to Meta</span>
+      <span class="topbar-sub" style="font-size:11px;font-weight:200;color:var(--muted)">Planned campaigns · Supabase only</span>
     </div>
     <button class="create-btn" onclick="openCreate()">+ New Campaign</button>
   </div>
-
   <div class="table-wrap">
     <div class="table-toolbar">
-      <div class="table-info" id="table-info">Loading planned campaigns...</div>
+      <div class="table-info" id="table-info">Loading...</div>
     </div>
     <div class="ads-table-scroll">
       <table class="ads-table">
         <thead><tr>
-          <th>Campaign / Ad Set / Ad</th>
-          <th>Status</th>
-          <th>Objective</th>
-          <th>Budget</th>
-          <th>Targeting / Details</th>
-          <th>Created</th>
+          <th>Campaign / Ad Set / Ad</th><th>Status</th><th>Objective</th>
+          <th>Budget</th><th>Details</th><th>Created</th>
           <th style="text-align:right">Actions</th>
         </tr></thead>
-        <tbody id="tbody">
-          <tr class="loading-row"><td colspan="7"><div class="spinner"></div>Loading...</td></tr>
-        </tbody>
+        <tbody id="tbody"><tr class="loading-row"><td colspan="7"><div class="spinner"></div>Loading...</td></tr></tbody>
       </table>
     </div>
   </div>
-  <footer>SuperSub Limited · supersub.co.nz · Meta Ads Plan · Supabase only, not connected to Meta</footer>
+  <footer>SuperSub Limited · supersub.co.nz · Meta Ads Plan · Not connected to Meta</footer>
 </div>
 </div>
 
-<!-- Create/Edit Modal -->
+<!-- CREATE/EDIT MODAL -->
 <div class="overlay" id="create-overlay" onclick="closeCreateOnOverlay(event)">
   <div class="modal">
     <div class="modal-header">
@@ -242,11 +299,11 @@ footer{text-align:center;padding:20px;font-size:11px;font-weight:200;color:var(-
   </div>
 </div>
 
-<!-- Delete Modal -->
+<!-- DELETE MODAL -->
 <div class="overlay" id="delete-overlay" onclick="closeDeleteOnOverlay(event)">
   <div class="delete-modal">
     <div class="delete-modal-header"><h3>Delete Campaign</h3><button class="modal-close" onclick="closeDelete()">✕</button></div>
-    <div class="delete-modal-body">Delete <b id="del-name"></b>? This will also remove all its ad sets and ads. This cannot be undone.</div>
+    <div class="delete-modal-body">Delete <b id="del-name"></b>? This removes all ad sets and ads. Cannot be undone.</div>
     <div class="delete-modal-footer">
       <button class="btn-back" onclick="closeDelete()">Cancel</button>
       <button class="btn-del" id="btn-del" onclick="confirmDelete()">Delete</button>
@@ -259,7 +316,7 @@ const SURL='https://wljoyrwjculthelfgzth.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indsam95cndqY3VsdGhlbGZnenRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1ODM1MTEsImV4cCI6MjA5MDE1OTUxMX0.8f3NV96YP9jOj__W9XiEDIiJ2gFlyBK53wnQJ1Tp6X0';
 const SH={'apikey':SKEY,'Authorization':`Bearer ${SKEY}`,'Content-Type':'application/json'};
 
-let createStep=1,createData={},editId=null,deleteId=null,plannedCache=[];
+let createStep=1, createData={}, editId=null, deleteId=null, plannedCache=[];
 const fmtDate=d=>d?new Date(d).toLocaleDateString('en-NZ',{day:'numeric',month:'short',year:'numeric'}):'—';
 
 async function sbGet(p){const r=await fetch(`${SURL}/rest/v1/${p}`,{headers:SH});if(!r.ok)throw new Error(r.status);return r.json();}
@@ -270,25 +327,27 @@ async function sbDelete(p){const r=await fetch(`${SURL}/rest/v1/${p}`,{method:'D
 const OBJ={OUTCOME_SALES:{label:'Sales',cls:'obj-sales',icon:'🛒'},OUTCOME_LEADS:{label:'Leads',cls:'obj-leads',icon:'🎯'},OUTCOME_TRAFFIC:{label:'Traffic',cls:'obj-traffic',icon:'↗️'},OUTCOME_ENGAGEMENT:{label:'Engagement',cls:'obj-engagement',icon:'💬'},OUTCOME_AWARENESS:{label:'Awareness',cls:'obj-awareness',icon:'📢'},OUTCOME_APP_PROMOTION:{label:'App',cls:'obj-app',icon:'📱'}};
 const getObj=k=>OBJ[k]||{label:k||'—',cls:'',icon:'📊'};
 const STATUS_BADGE={draft:'<span class="status-badge status-draft">Draft</span>',in_review:'<span class="status-badge status-in_review">In Review</span>',approved:'<span class="status-badge status-approved">Approved ✓</span>'};
-
 const OBJECTIVES=[
   {value:'OUTCOME_AWARENESS',icon:'📢',label:'Awareness',desc:'Maximise how many people see your ads'},
   {value:'OUTCOME_TRAFFIC',icon:'↗️',label:'Traffic',desc:'Send people to a destination on or off Meta'},
-  {value:'OUTCOME_ENGAGEMENT',icon:'💬',label:'Engagement',desc:'Get more messages, video views or interactions'},
+  {value:'OUTCOME_ENGAGEMENT',icon:'💬',label:'Engagement',desc:'Get messages, video views or interactions'},
   {value:'OUTCOME_LEADS',icon:'🎯',label:'Leads',desc:'Collect leads via forms, Messenger or calls'},
-  {value:'OUTCOME_APP_PROMOTION',icon:'📱',label:'App Promotion',desc:'Find new users or re-engage existing app users'},
-  {value:'OUTCOME_SALES',icon:'🛒',label:'Sales',desc:'Find people likely to purchase your product'},
+  {value:'OUTCOME_APP_PROMOTION',icon:'📱',label:'App Promotion',desc:'Find new users or re-engage app users'},
+  {value:'OUTCOME_SALES',icon:'🛒',label:'Sales',desc:'Find people likely to purchase'},
 ];
 
+// ═══ TABLE ═══
 function buildRow(c){
   const obj=getObj(c.objective);
   const budget=c.budget_nzd?`NZ$${c.budget_nzd}/${c.budget_type==='daily'?'day':'total'}`:'—';
+  const settings=c.settings||{};
+  const bidStrategy=settings.bid_strategy||'Highest volume';
   const tr=document.createElement('tr');tr.className='row-campaign';tr.dataset.id=c.id;
   tr.innerHTML=`<td><div class="name-cell"><button class="expand-btn" id="pexp-${c.id}" onclick="handleExpand(${c.id})">▶</button><span class="row-name" title="${c.name}">${c.name}</span></div></td>
   <td>${STATUS_BADGE[c.status]||c.status}</td>
   <td><span class="obj-badge ${obj.cls}">${obj.icon} ${obj.label}</span></td>
   <td>${budget}</td>
-  <td style="font-size:11px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis">${c.internal_notes||'—'}</td>
+  <td style="font-size:11px;color:var(--muted)">${bidStrategy}</td>
   <td style="font-size:11px">${fmtDate(c.created_at)}</td>
   <td><div class="actions-cell">
     ${c.status==='draft'?`<button class="action-btn submit" onclick="advanceStatus(${c.id},'in_review')">Submit ↑</button>`:''}
@@ -299,30 +358,20 @@ function buildRow(c){
   </div></td>`;
   return tr;
 }
-
 function buildAdSetRow(as,campId){
-  const budget=as.budget_nzd?`NZ$${as.budget_nzd}/${as.budget_type==='daily'?'day':'total'}`:'—';
-  const dates=as.start_date?`${fmtDate(as.start_date)}${as.end_date?' → '+fmtDate(as.end_date):''}`:'-';
+  const s=as.settings||{};
+  const details=[s.conversion_location,s.performance_goal].filter(Boolean).join(' · ')||'—';
   const tr=document.createElement('tr');tr.className='row-planned-adset';tr.dataset.id=`as-${as.id}`;tr.dataset.plannedParent=campId;tr.style.display='none';
-  tr.innerHTML=`<td><div class="name-cell" style="padding-left:4px"><span class="no-expand"></span><span class="row-name" title="${as.name}">${as.name}</span><span class="obj-badge" style="background:var(--mist);color:var(--blue)">Ad Set</span></div></td>
-  <td>${STATUS_BADGE[as.status]||'—'}</td><td>—</td><td>${budget}</td>
-  <td style="font-size:11px;color:var(--muted)">${as.targeting_summary||'—'}</td>
-  <td style="font-size:11px">${dates}</td><td></td>`;
-  return tr;
-}
-
-function buildAdRow(ad,campId){
-  const tr=document.createElement('tr');tr.className='row-planned-ad';tr.dataset.id=`ad-${ad.id}`;tr.dataset.plannedParent=campId;tr.style.display='none';
-  tr.innerHTML=`<td><div class="name-cell" style="padding-left:8px"><span class="no-expand"></span><span class="row-name" title="${ad.name}">${ad.name}</span><span class="obj-badge" style="background:rgba(120,120,120,0.08);color:#666">Ad</span></div></td>
-  <td>${STATUS_BADGE[ad.status]||'—'}</td><td>—</td><td>—</td>
-  <td style="font-size:11px;color:var(--muted)">${ad.headline||'—'}${ad.call_to_action?` · ${ad.call_to_action.replace(/_/g,' ')}`:''}</td>
-  <td>—</td><td></td>`;
+  tr.innerHTML=`<td><div class="name-cell" style="padding-left:4px"><span class="no-expand"></span><span class="row-name">${as.name}</span><span class="obj-badge" style="background:var(--mist);color:var(--blue)">Ad Set</span></div></td>
+  <td>${STATUS_BADGE[as.status]||'—'}</td><td>—</td>
+  <td>${as.budget_nzd?`NZ$${as.budget_nzd}/${as.budget_type==='daily'?'day':'total'}`:'—'}</td>
+  <td style="font-size:11px;color:var(--muted)">${details}</td>
+  <td style="font-size:11px">${as.start_date?fmtDate(as.start_date):'—'}</td><td></td>`;
   return tr;
 }
 
 async function handleExpand(id){
-  const btn=document.getElementById(`pexp-${id}`);
-  const isExp=btn.classList.contains('expanded');
+  const btn=document.getElementById(`pexp-${id}`);const isExp=btn.classList.contains('expanded');
   const sel=`[data-planned-parent="${id}"]`;
   if(isExp){document.querySelectorAll(sel).forEach(r=>r.style.display='none');btn.classList.remove('expanded');return;}
   if(document.querySelectorAll(sel).length>0){document.querySelectorAll(sel).forEach(r=>r.style.display='table-row');btn.classList.add('expanded');return;}
@@ -330,19 +379,12 @@ async function handleExpand(id){
   try{
     const adsets=await sbGet(`meta_planned_adsets?campaign_id=eq.${id}&order=created_at.asc`);
     const parent=document.querySelector(`[data-id="${id}"]`);
-    let after=parent;
     if(!adsets.length){
       const e=document.createElement('tr');e.dataset.plannedParent=id;e.style.display='table-row';
       e.innerHTML=`<td colspan="7" style="padding:8px 14px 8px 48px;font-size:11px;color:var(--muted);font-style:italic;background:#fafbff">No ad sets yet.</td>`;
-      after.insertAdjacentElement('afterend',e);
+      parent.insertAdjacentElement('afterend',e);
     }else{
-      // For each adset, fetch its ads too
-      for(const as of [...adsets].reverse()){
-        const ads=await sbGet(`meta_planned_ads?adset_id=eq.${as.id}&order=created_at.asc`);
-        [...ads].reverse().forEach(ad=>{const r=buildAdRow(ad,id);r.style.display='table-row';after.insertAdjacentElement('afterend',r);});
-        const asRow=buildAdSetRow(as,id);asRow.style.display='table-row';
-        after.insertAdjacentElement('afterend',asRow);
-      }
+      [...adsets].reverse().forEach(as=>{const r=buildAdSetRow(as,id);r.style.display='table-row';parent.insertAdjacentElement('afterend',r);});
     }
     btn.classList.add('expanded');
   }catch(e){btn.textContent='!';setTimeout(()=>{btn.textContent='▶';btn.style.animation='';},2000);return;}
@@ -353,13 +395,11 @@ async function advanceStatus(id,status){
   try{await sbPatch(`meta_planned_campaigns?id=eq.${id}`,{status,updated_at:new Date().toISOString()});await loadPlanned();}
   catch(e){alert('Error: '+e.message);}
 }
-
 function openDelete(id,name){deleteId=id;document.getElementById('del-name').textContent=name;document.getElementById('delete-overlay').classList.add('open');document.body.style.overflow='hidden';}
 function closeDelete(){document.getElementById('delete-overlay').classList.remove('open');document.body.style.overflow='';deleteId=null;}
 function closeDeleteOnOverlay(e){if(e.target===document.getElementById('delete-overlay'))closeDelete();}
 async function confirmDelete(){
-  if(!deleteId)return;
-  const btn=document.getElementById('btn-del');btn.disabled=true;btn.textContent='Deleting...';
+  if(!deleteId)return;const btn=document.getElementById('btn-del');btn.disabled=true;btn.textContent='Deleting...';
   try{await sbDelete(`meta_planned_campaigns?id=eq.${deleteId}`);closeDelete();await loadPlanned();}
   catch(e){alert('Error: '+e.message);btn.disabled=false;btn.textContent='Delete';}
 }
@@ -369,26 +409,22 @@ async function loadPlanned(){
   tbody.innerHTML='<tr class="loading-row"><td colspan="7"><div class="spinner"></div>Loading...</td></tr>';
   try{
     const campaigns=await sbGet('meta_planned_campaigns?select=*&order=created_at.desc');
-    plannedCache=campaigns;
-    tbody.innerHTML='';
+    plannedCache=campaigns;tbody.innerHTML='';
     if(!campaigns.length){tbody.innerHTML='<tr class="empty-row"><td colspan="7">No planned campaigns yet.<br><br><button onclick="openCreate()" style="background:var(--blue);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:Inter,sans-serif">+ Create your first campaign</button></td></tr>';return;}
     campaigns.forEach(c=>tbody.appendChild(buildRow(c)));
-    const draft=campaigns.filter(c=>c.status==='draft').length;
-    const approved=campaigns.filter(c=>c.status==='approved').length;
     document.getElementById('table-info').textContent=`${campaigns.length} planned campaign${campaigns.length!==1?'s':''}`;
     document.getElementById('sb-total').textContent=campaigns.length;
-    document.getElementById('sb-draft').textContent=draft;
-    document.getElementById('sb-approved').textContent=approved;
+    document.getElementById('sb-draft').textContent=campaigns.filter(c=>c.status==='draft').length;
+    document.getElementById('sb-approved').textContent=campaigns.filter(c=>c.status==='approved').length;
   }catch(e){tbody.innerHTML=`<tr class="empty-row"><td colspan="7">Error: ${e.message}</td></tr>`;}
 }
 
-// ── CREATE/EDIT MODAL ──
-function openCreate(){editId=null;createStep=1;createData={};document.getElementById('modal-title').textContent='Create Campaign';document.getElementById('step-msg').textContent='';renderStep(1);document.getElementById('create-overlay').classList.add('open');document.body.style.overflow='hidden';}
+// ═══ CREATE/EDIT MODAL ═══
+function openCreate(){editId=null;createStep=1;createData={saveStatus:'draft'};document.getElementById('modal-title').textContent='Create Campaign';renderStep(1);document.getElementById('create-overlay').classList.add('open');document.body.style.overflow='hidden';}
 function openEdit(id){
   editId=id;const c=plannedCache.find(x=>x.id===id);
-  if(c){createData={objective:c.objective,campaignName:c.name,buyingType:c.buying_type||'AUCTION',budgetType:c.budget_type||'daily',budget:c.budget_nzd,internalNotes:c.internal_notes||'',saveStatus:c.status};}
-  createStep=1;document.getElementById('modal-title').textContent='Edit Campaign';document.getElementById('step-msg').textContent='';
-  renderStep(1);document.getElementById('create-overlay').classList.add('open');document.body.style.overflow='hidden';
+  if(c){const s=c.settings||{};createData={objective:c.objective,campaignName:c.name,buyingType:c.buying_type||'AUCTION',budgetStrategy:s.budget_strategy||'campaign',budgetType:c.budget_type||'daily',budget:c.budget_nzd,bidStrategy:s.bid_strategy||'HIGHEST_VOLUME',abTest:s.ab_test||false,specialAdCat:s.special_ad_category||'NONE',saveStatus:c.status||'draft'};}
+  createStep=1;document.getElementById('modal-title').textContent='Edit Campaign';renderStep(1);document.getElementById('create-overlay').classList.add('open');document.body.style.overflow='hidden';
 }
 function closeCreate(){document.getElementById('create-overlay').classList.remove('open');document.body.style.overflow='';editId=null;createStep=1;createData={};}
 function closeCreateOnOverlay(e){if(e.target===document.getElementById('create-overlay'))closeCreate();}
@@ -397,11 +433,8 @@ function updateStepUI(step){
   const ind=document.getElementById('step-indicator');
   const labels=['Campaign','Ad Set','Ad','Review'];
   ind.innerHTML=labels.map((l,i)=>{
-    const n=i+1;
-    const cls=n<step?'step-dot done':n===step?'step-dot active':'step-dot';
-    const circle=n<step?'✓':n;
-    const line=i<3?`<div class="step-line${n<step?' done':''}"></div>`:'';
-    return `<div class="${cls}"><div class="step-circle">${circle}</div>${l}</div>${line}`;
+    const n=i+1,cls=n<step?'step-dot done':n===step?'step-dot active':'step-dot',circle=n<step?'✓':n;
+    return `<div class="${cls}"><div class="step-circle">${circle}</div>${l}</div>${i<3?`<div class="step-line${n<step?' done':''}"></div>`:''}`;
   }).join('');
   document.getElementById('btn-back').style.display=step>1?'':'none';
   document.getElementById('btn-next').style.display=step<4?'':'none';
@@ -411,60 +444,338 @@ function updateStepUI(step){
 
 function renderStep(step){
   createStep=step;updateStepUI(step);
+  document.getElementById('step-msg').textContent='';
   const c=document.getElementById('step-content');
+  const obj=getObj(createData.objective||'');
+
   if(step===1){
-    c.innerHTML=`<div class="step-title">Choose a campaign objective</div><div class="step-subtitle">Your objective is the goal you want to achieve.</div>
-    <div class="objectives-grid">${OBJECTIVES.map(o=>`<label class="obj-option${createData.objective===o.value?' selected':''}" onclick="selectObj('${o.value}',this)">
-      <input type="radio" name="obj" value="${o.value}" ${createData.objective===o.value?'checked':''}><div class="obj-icon">${o.icon}</div>
-      <div><div class="obj-label-text">${o.label}</div><div class="obj-desc">${o.desc}</div></div></label>`).join('')}
+    c.innerHTML=`
+    <p style="font-size:13px;font-weight:200;color:var(--muted);margin-bottom:18px">Your objective is the goal you want to achieve with your campaign.</p>
+    <div class="objectives-grid">${OBJECTIVES.map(o=>`
+      <label class="obj-option${createData.objective===o.value?' selected':''}" onclick="selectObj('${o.value}',this)">
+        <input type="radio" name="obj" value="${o.value}" ${createData.objective===o.value?'checked':''}>
+        <div class="obj-icon">${o.icon}</div>
+        <div><div class="obj-lbl">${o.label}</div><div class="obj-dsc">${o.desc}</div></div>
+      </label>`).join('')}
     </div>`;
-  }else if(step===2){
-    const obj=getObj(createData.objective||'');
-    c.innerHTML=`<div class="step-title">Campaign details</div>
-    <div class="field-group"><div class="field-label">Campaign name</div><input class="field-input" id="cf-name" type="text" placeholder="${obj.label} — ${new Date().toLocaleDateString('en-NZ',{month:'short',year:'numeric'})}" value="${createData.campaignName||''}"/></div>
-    <div class="field-group"><div class="field-label">Buying type</div><select class="field-select" id="cf-buying"><option value="AUCTION" ${createData.buyingType!=='RESERVATION'?'selected':''}>Auction (recommended)</option><option value="RESERVATION" ${createData.buyingType==='RESERVATION'?'selected':''}>Reservation</option></select></div>
-    <div class="field-group"><div class="field-label">Budget type</div><div class="radio-row"><label><input type="radio" name="btype" value="daily" ${createData.budgetType!=='lifetime'?'checked':''}> Daily</label><label><input type="radio" name="btype" value="lifetime" ${createData.budgetType==='lifetime'?'checked':''}> Lifetime</label></div></div>
-    <div class="field-group"><div class="field-label">Budget amount (NZD)</div><input class="field-input" id="cf-budget" type="number" min="1" step="1" placeholder="e.g. 50" value="${createData.budget||''}"/></div>
-    <div class="field-group"><div class="field-label">Internal notes (optional)</div><textarea class="field-textarea" id="cf-notes" placeholder="e.g. Cold audience test, SIP Panel target market">${createData.internalNotes||''}</textarea></div>`;
-  }else if(step===3){
-    c.innerHTML=`<div class="step-title">Ad Set</div>
-    <div class="field-group"><div class="field-label">Ad set name</div><input class="field-input" id="af-name" type="text" placeholder="e.g. Auckland Homeowners 35-55" value="${createData.adsetName||''}"/></div>
-    <div class="field-group"><div class="field-label">Targeting summary</div><textarea class="field-textarea" id="af-targeting" placeholder="e.g. Auckland & Wellington, homeowners, 35-55, interested in construction">${createData.adsetTargeting||''}</textarea></div>
-    <div class="field-group"><div class="field-label">Placements</div><select class="field-select" id="af-placements"><option value="Automatic" ${!createData.adsetPlacements||createData.adsetPlacements==='Automatic'?'selected':''}>Advantage+ (recommended)</option><option value="Manual" ${createData.adsetPlacements==='Manual'?'selected':''}>Manual</option></select></div>
-    <div class="field-row"><div class="field-group"><div class="field-label">Start date</div><input class="field-input" id="af-start" type="date" value="${createData.adsetStart||''}"/></div><div class="field-group"><div class="field-label">End date (optional)</div><input class="field-input" id="af-end" type="date" value="${createData.adsetEnd||''}"/></div></div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:4px 0 16px">
-    <div class="step-title" style="font-size:13px">Ad</div>
-    <div class="field-group"><div class="field-label">Ad name</div><input class="field-input" id="adf-name" type="text" placeholder="e.g. SIP Panel Video v1" value="${createData.adName||''}"/></div>
-    <div class="field-group"><div class="field-label">Headline</div><input class="field-input" id="adf-headline" type="text" maxlength="40" placeholder="e.g. Build Smarter with SIP Panels" value="${createData.adHeadline||''}"/></div>
-    <div class="field-group"><div class="field-label">Primary text</div><textarea class="field-textarea" id="adf-body" maxlength="500" placeholder="Your ad copy...">${createData.adBody||''}</textarea></div>
-    <div class="field-row">
-      <div class="field-group"><div class="field-label">Call to action</div><select class="field-select" id="adf-cta">${['LEARN_MORE','GET_QUOTE','CONTACT_US','SIGN_UP','DOWNLOAD','SHOP_NOW','BOOK_NOW','APPLY_NOW'].map(v=>`<option value="${v}" ${createData.adCta===v?'selected':''}>${v.replace(/_/g,' ')}</option>`).join('')}</select></div>
-      <div class="field-group"><div class="field-label">Creative URL (Dropbox)</div><input class="field-input" id="adf-creative" type="url" placeholder="https://dropbox.com/..." value="${createData.adCreative||''}"/></div>
+  }
+
+  else if(step===2){
+    const bsStrategy=createData.budgetStrategy||'campaign';
+    const btype=createData.budgetType||'daily';
+    const bidStrat=createData.bidStrategy||'HIGHEST_VOLUME';
+    c.innerHTML=`
+    <!-- Campaign Name -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Campaign name</div></div>
+      <div class="field-group" style="margin:0">
+        <input class="field-input" id="cf-name" type="text" placeholder="New ${obj.label} campaign" value="${createData.campaignName||''}"/>
+      </div>
     </div>
-    <div class="field-group"><div class="field-label">Destination URL</div><input class="field-input" id="adf-dest" type="url" placeholder="https://supersub.co.nz/..." value="${createData.adDest||''}"/></div>`;
-  }else if(step===4){
-    const obj=getObj(createData.objective||'');
-    c.innerHTML=`<div class="step-title">Review & Save</div>
-    <div class="review-section"><div class="review-section-title">Campaign</div>
-      <div class="review-row"><span class="review-key">Name</span><span class="review-val">${createData.campaignName||'—'}</span></div>
-      <div class="review-row"><span class="review-key">Objective</span><span class="review-val">${obj.icon} ${obj.label}</span></div>
-      <div class="review-row"><span class="review-key">Budget</span><span class="review-val">${createData.budget?`NZ$${createData.budget}/${createData.budgetType==='daily'?'per day':'total'}`:'—'}</span></div>
-      ${createData.internalNotes?`<div class="review-row"><span class="review-key">Notes</span><span class="review-val">${createData.internalNotes}</span></div>`:''}
+
+    <!-- Campaign Details -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Campaign details</div></div>
+      <div class="detail-row"><span class="detail-key">Buying type</span><span class="detail-val">Auction</span></div>
+      <div class="detail-row"><span class="detail-key">Campaign objective</span><span class="detail-val">${obj.icon} ${obj.label}</span></div>
     </div>
-    ${createData.adsetName?`<div class="review-section"><div class="review-section-title">Ad Set</div>
-      <div class="review-row"><span class="review-key">Name</span><span class="review-val">${createData.adsetName}</span></div>
-      <div class="review-row"><span class="review-key">Targeting</span><span class="review-val">${createData.adsetTargeting||'—'}</span></div>
-      <div class="review-row"><span class="review-key">Schedule</span><span class="review-val">${createData.adsetStart||'—'}${createData.adsetEnd?' → '+createData.adsetEnd:''}</span></div>
+
+    <!-- Budget -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Budget</div><button class="section-info" title="About budgets">ⓘ</button></div>
+
+      <div class="field-label" style="margin-bottom:8px">Budget strategy</div>
+      <div class="budget-strategy-row">
+        <label class="bstrat-card${bsStrategy==='campaign'?' selected':''}" onclick="selectBudgetStrategy('campaign',this)">
+          <input type="radio" name="bstrat" value="campaign" ${bsStrategy==='campaign'?'checked':''}>
+          <div class="bstrat-title">Campaign budget</div>
+          <div class="bstrat-desc">Automatically distribute your daily budget across ad sets for best performance. Also known as Advantage+ campaign budget.</div>
+        </label>
+        <label class="bstrat-card${bsStrategy==='adset'?' selected':''}" onclick="selectBudgetStrategy('adset',this)">
+          <input type="radio" name="bstrat" value="adset" ${bsStrategy==='adset'?'checked':''}>
+          <div class="bstrat-title">Ad set budget</div>
+          <div class="bstrat-desc">Set different bid strategies or budget schedules for each ad set.</div>
+        </label>
+      </div>
+
+      <div class="field-row" style="margin-bottom:14px">
+        <div class="field-group" style="margin:0">
+          <div class="field-label">Budget type</div>
+          <select class="field-select" id="cf-budget-type">
+            <option value="daily" ${btype==='daily'?'selected':''}>Daily budget</option>
+            <option value="lifetime" ${btype==='lifetime'?'selected':''}>Lifetime budget</option>
+          </select>
+        </div>
+        <div class="field-group" style="margin:0">
+          <div class="field-label">Amount</div>
+          <div class="currency-wrap">
+            <span class="currency-prefix">$</span>
+            <input class="currency-main" id="cf-budget" type="number" min="1" step="1" placeholder="0.00" value="${createData.budget||''}">
+            <span class="currency-suffix">NZD</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Campaign bid strategy <button class="section-info" style="font-size:12px">ⓘ</button></div>
+        <select class="field-select" id="cf-bid-strategy">
+          <option value="HIGHEST_VOLUME" ${bidStrat==='HIGHEST_VOLUME'?'selected':''}>Highest volume or value</option>
+          <option value="COST_CAP" ${bidStrat==='COST_CAP'?'selected':''}>Cost per result goal</option>
+          <option value="BID_CAP" ${bidStrat==='BID_CAP'?'selected':''}>Bid cap</option>
+        </select>
+        <div class="field-hint">How we'll bid in ad auctions.</div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="toggle-field">
+        <div class="toggle-field-left"><div class="toggle-field-label">A/B test</div><div class="toggle-field-desc">Compare this campaign against another to see which performs better.</div></div>
+        <label class="ios-toggle"><input type="checkbox" id="cf-ab-test" ${createData.abTest?'checked':''}><span class="ios-slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Special Ad Categories -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Special Ad Categories</div><button class="section-info">ⓘ</button></div>
+      <div class="field-hint" style="margin-bottom:10px">Declare if your ads are related to credit, employment, housing, social issues, elections or politics. Requirements differ by country.</div>
+      <select class="field-select" id="cf-special-cat">
+        <option value="NONE" ${!createData.specialAdCat||createData.specialAdCat==='NONE'?'selected':''}>Declare category if applicable</option>
+        <option value="CREDIT" ${createData.specialAdCat==='CREDIT'?'selected':''}>Credit</option>
+        <option value="EMPLOYMENT" ${createData.specialAdCat==='EMPLOYMENT'?'selected':''}>Employment</option>
+        <option value="HOUSING" ${createData.specialAdCat==='HOUSING'?'selected':''}>Housing</option>
+        <option value="ISSUES_ELECTIONS_POLITICS" ${createData.specialAdCat==='ISSUES_ELECTIONS_POLITICS'?'selected':''}>Issues, Elections, Politics</option>
+      </select>
+    </div>`;
+  }
+
+  else if(step===3){
+    const s=createData.adsetSettings||{};
+    const convLoc=s.conversion_location||'INSTANT_FORMS';
+    const perfGoal=s.performance_goal||'MAXIMIZE_LEAD_GENERATION';
+    const attrModel=s.attribution_model||'STANDARD';
+    const placement=s.placements||'ADVANTAGE_PLUS';
+    const gender=s.gender||'ALL';
+    const minAge=s.min_age||'18';
+    const maxAge=s.max_age||'65+';
+
+    c.innerHTML=`
+    <!-- Ad Set Name -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Ad set name</div></div>
+      <input class="field-input" id="af-name" type="text" placeholder="New ${obj.label} ad set" value="${s.name||''}"/>
+    </div>
+
+    <!-- Conversion -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Conversion</div></div>
+
+      <div class="field-group">
+        <div class="field-label">Conversion location <button class="section-info" style="font-size:12px">ⓘ</button></div>
+        <div class="field-hint" style="margin-bottom:8px">Choose where you want to generate leads.</div>
+        <div class="conv-location-wrap">
+          <div class="conv-group-label">Multiple</div>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="WEBSITE_AND_INSTANT_FORMS" ${convLoc==='WEBSITE_AND_INSTANT_FORMS'?'checked':''}><span class="conv-option-label">Website and instant forms</span></label>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="WEBSITE_AND_CALLS" ${convLoc==='WEBSITE_AND_CALLS'?'checked':''}><span class="conv-option-label">Website and calls</span></label>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="INSTANT_FORMS_AND_MESSENGER" ${convLoc==='INSTANT_FORMS_AND_MESSENGER'?'checked':''}><span class="conv-option-label">Instant forms and Messenger</span></label>
+          <div class="conv-group-label">Single</div>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="WEBSITE" ${convLoc==='WEBSITE'?'checked':''}><span class="conv-option-label">Website</span></label>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="INSTANT_FORMS" ${convLoc==='INSTANT_FORMS'?'checked':''}><span class="conv-option-label">Instant forms</span><span class="conv-rec">Recommended</span></label>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="MESSENGER" ${convLoc==='MESSENGER'?'checked':''}><span class="conv-option-label">Messenger</span></label>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="INSTAGRAM" ${convLoc==='INSTAGRAM'?'checked':''}><span class="conv-option-label">Instagram</span></label>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="WHATSAPP" ${convLoc==='WHATSAPP'?'checked':''}><span class="conv-option-label">WhatsApp</span></label>
+          <label class="conv-option"><input type="radio" name="conv-loc" value="CALLS" ${convLoc==='CALLS'?'checked':''}><span class="conv-option-label">Calls</span></label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Facebook Page <button class="section-info" style="font-size:12px">ⓘ</button></div>
+        <input class="field-input" id="af-fb-page" type="text" placeholder="e.g. SUPER SUB" value="${s.facebook_page||'SUPER SUB'}"/>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Performance goal <button class="section-info" style="font-size:12px">ⓘ</button></div>
+        <select class="field-select" id="af-perf-goal">
+          <optgroup label="Leads goals">
+            <option value="MAXIMIZE_LEAD_GENERATION" ${perfGoal==='MAXIMIZE_LEAD_GENERATION'?'selected':''}>Maximise number of leads</option>
+            <option value="MAXIMIZE_QUALITY_LEAD_GENERATION" ${perfGoal==='MAXIMIZE_QUALITY_LEAD_GENERATION'?'selected':''}>Maximise number of conversion leads</option>
+          </optgroup>
+          <optgroup label="Other goals">
+            <option value="MAXIMIZE_LANDING_PAGE_VIEWS" ${perfGoal==='MAXIMIZE_LANDING_PAGE_VIEWS'?'selected':''}>Maximise number of landing page views</option>
+            <option value="MAXIMIZE_LINK_CLICKS" ${perfGoal==='MAXIMIZE_LINK_CLICKS'?'selected':''}>Maximise number of link clicks</option>
+            <option value="MAXIMIZE_DAILY_UNIQUE_REACH" ${perfGoal==='MAXIMIZE_DAILY_UNIQUE_REACH'?'selected':''}>Maximise daily unique reach</option>
+            <option value="MAXIMIZE_IMPRESSIONS" ${perfGoal==='MAXIMIZE_IMPRESSIONS'?'selected':''}>Maximise number of impressions</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group" style="margin:0">
+          <div class="field-label">Dataset (Pixel) <button class="section-info" style="font-size:12px">ⓘ</button></div>
+          <input class="field-input" id="af-dataset" type="text" placeholder="e.g. New Supersub pixel" value="${s.dataset||'New Supersub pixel'}"/>
+        </div>
+        <div class="field-group" style="margin:0">
+          <div class="field-label">Conversion event</div>
+          <select class="field-select" id="af-conv-event">
+            <option value="LEAD" ${(s.conversion_event||'LEAD')==='LEAD'?'selected':''}>Lead</option>
+            <option value="PURCHASE" ${s.conversion_event==='PURCHASE'?'selected':''}>Purchase</option>
+            <option value="COMPLETE_REGISTRATION" ${s.conversion_event==='COMPLETE_REGISTRATION'?'selected':''}>Complete Registration</option>
+            <option value="CONTACT" ${s.conversion_event==='CONTACT'?'selected':''}>Contact</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Cost per result goal <span class="field-label-optional">(optional)</span></div>
+        <div class="currency-wrap">
+          <span class="currency-prefix">$</span>
+          <input class="currency-main" id="af-cpr-goal" type="number" min="0" step="0.01" placeholder="None" value="${s.cost_per_result_goal||''}">
+          <span class="currency-suffix">NZD</span>
+        </div>
+        <div class="field-hint">Set a target cost. Leave blank for no goal.</div>
+      </div>
+
+      <div class="field-group" style="margin:0">
+        <div class="field-label">Attribution model <button class="section-info" style="font-size:12px">ⓘ</button></div>
+        <select class="field-select" id="af-attr-model">
+          <option value="STANDARD" ${attrModel==='STANDARD'?'selected':''}>Standard</option>
+          <option value="DATA_DRIVEN" ${attrModel==='DATA_DRIVEN'?'selected':''}>Data-driven</option>
+        </select>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="toggle-field">
+        <div class="toggle-field-left"><div class="toggle-field-label">Dynamic creative</div><div class="toggle-field-desc">Automatically create the best performing combinations of your assets.</div></div>
+        <label class="ios-toggle"><input type="checkbox" id="af-dynamic" ${s.dynamic_creative?'checked':''}><span class="ios-slider"></span></label>
+      </div>
+    </div>
+
+    <!-- Budget & Schedule -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Budget &amp; schedule</div></div>
+      ${createData.budgetStrategy==='adset'?`
+      <div class="field-row" style="margin-bottom:14px">
+        <div class="field-group" style="margin:0">
+          <div class="field-label">Budget type</div>
+          <select class="field-select" id="af-budget-type">
+            <option value="daily" ${(s.budget_type||'daily')==='daily'?'selected':''}>Daily budget</option>
+            <option value="lifetime" ${s.budget_type==='lifetime'?'selected':''}>Lifetime budget</option>
+          </select>
+        </div>
+        <div class="field-group" style="margin:0">
+          <div class="field-label">Amount (NZD)</div>
+          <div class="currency-wrap">
+            <span class="currency-prefix">$</span>
+            <input class="currency-main" id="af-budget" type="number" min="1" step="1" placeholder="0.00" value="${s.budget||''}">
+            <span class="currency-suffix">NZD</span>
+          </div>
+        </div>
+      </div>`:'<div class="field-hint" style="margin-bottom:12px">Budget controlled at campaign level.</div>'}
+      <div class="field-row">
+        <div class="field-group" style="margin:0">
+          <div class="field-label">Start date</div>
+          <input class="field-input" id="af-start" type="date" value="${s.start_date||''}"/>
+        </div>
+        <div class="field-group" style="margin:0">
+          <div class="field-label">End date <span class="field-label-optional">(optional)</span></div>
+          <input class="field-input" id="af-end" type="date" value="${s.end_date||''}"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audience -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Audience</div><span style="font-size:10px;font-weight:600;padding:2px 8px;background:rgba(39,108,233,0.1);color:var(--blue);border-radius:10px;margin-left:8px">Advantage+ on</span></div>
+
+      <div class="audience-field">
+        <div class="audience-label">Controls <button class="section-info" style="font-size:12px">ⓘ</button></div>
+        <div class="field-hint" style="margin-bottom:8px">We won't reach people beyond these settings, even with Advantage+ on.</div>
+        <div class="field-group" style="margin-bottom:10px">
+          <div class="field-label">Locations</div>
+          <input class="field-input" id="af-locations" type="text" placeholder="e.g. New Zealand" value="${s.locations||'New Zealand'}"/>
+        </div>
+        <div class="field-row" style="margin-bottom:0">
+          <div class="field-group" style="margin:0">
+            <div class="field-label">Minimum age</div>
+            <select class="field-select" id="af-min-age">
+              ${['18','21','25','30','35','40','45','50','55','60','65'].map(a=>`<option value="${a}" ${minAge===a?'selected':''}>${a}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field-group" style="margin:0">
+            <div class="field-label">Maximum age</div>
+            <select class="field-select" id="af-max-age">
+              ${['18','21','25','30','35','40','45','50','55','60','65','65+'].map(a=>`<option value="${a}" ${maxAge===a?'selected':''}>${a}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="audience-field">
+        <div class="audience-label">Gender</div>
+        <div class="gender-options">
+          <div class="gender-opt${gender==='ALL'?' selected':''}" onclick="selectGender('ALL',this)">All genders</div>
+          <div class="gender-opt${gender==='MALE'?' selected':''}" onclick="selectGender('MALE',this)">Men</div>
+          <div class="gender-opt${gender==='FEMALE'?' selected':''}" onclick="selectGender('FEMALE',this)">Women</div>
+        </div>
+      </div>
+
+      <div class="audience-field" style="border:none">
+        <div class="audience-label">Detailed targeting <button class="section-info" style="font-size:12px">ⓘ</button></div>
+        <div class="field-hint" style="margin-bottom:6px">Include people based on demographics, interests and behaviours.</div>
+        <textarea class="field-textarea" id="af-detailed-targeting" placeholder="e.g. Homeowners, construction, architecture, property investment...">${s.detailed_targeting||''}</textarea>
+      </div>
+    </div>
+
+    <!-- Placements -->
+    <div class="section-card">
+      <div class="section-header"><div class="section-check">✓</div><div class="section-title-text">Placements</div><span style="font-size:10px;font-weight:600;padding:2px 8px;background:rgba(39,108,233,0.1);color:var(--blue);border-radius:10px;margin-left:8px">Advantage+ on</span></div>
+      <div class="field-hint" style="margin-bottom:12px">We'll automatically show ads in the places where they're likely to respond.</div>
+      <div class="placement-cards">
+        <label class="placement-card${placement==='ADVANTAGE_PLUS'?' selected':''}" onclick="selectPlacement('ADVANTAGE_PLUS',this)">
+          <input type="radio" name="placement" value="ADVANTAGE_PLUS" ${placement==='ADVANTAGE_PLUS'?'checked':''}>
+          <div class="placement-title">Advantage+ placements</div>
+          <div class="placement-desc">Use all placements for best results.</div>
+          <div class="placement-rec">✓ Recommended</div>
+        </label>
+        <label class="placement-card${placement==='MANUAL'?' selected':''}" onclick="selectPlacement('MANUAL',this)">
+          <input type="radio" name="placement" value="MANUAL" ${placement==='MANUAL'?'checked':''}>
+          <div class="placement-title">Manual placements</div>
+          <div class="placement-desc">Choose where your ads appear.</div>
+        </label>
+      </div>
+    </div>`;
+  }
+
+  else if(step===4){
+    const obj2=getObj(createData.objective||'');
+    const s=createData.adsetSettings||{};
+    c.innerHTML=`
+    <!-- Review -->
+    <div class="section-card">
+      <div class="review-section"><div class="review-section-title">Campaign</div>
+        <div class="review-row"><span class="review-key">Name</span><span class="review-val">${createData.campaignName||'—'}</span></div>
+        <div class="review-row"><span class="review-key">Objective</span><span class="review-val">${obj2.icon} ${obj2.label}</span></div>
+        <div class="review-row"><span class="review-key">Budget strategy</span><span class="review-val">${createData.budgetStrategy==='campaign'?'Campaign budget':'Ad set budget'}</span></div>
+        <div class="review-row"><span class="review-key">Budget</span><span class="review-val">${createData.budget?`NZ$${createData.budget}/${createData.budgetType==='daily'?'per day':'total'}`:'—'}</span></div>
+        <div class="review-row"><span class="review-key">Bid strategy</span><span class="review-val">${createData.bidStrategy==='HIGHEST_VOLUME'?'Highest volume or value':createData.bidStrategy==='COST_CAP'?'Cost per result goal':'Bid cap'}</span></div>
+      </div>
+    </div>
+    ${s.name?`<div class="section-card">
+      <div class="review-section"><div class="review-section-title">Ad Set</div>
+        <div class="review-row"><span class="review-key">Name</span><span class="review-val">${s.name}</span></div>
+        <div class="review-row"><span class="review-key">Conversion location</span><span class="review-val">${(s.conversion_location||'').replace(/_/g,' ')}</span></div>
+        <div class="review-row"><span class="review-key">Performance goal</span><span class="review-val">${(s.performance_goal||'').replace(/_/g,' ')}</span></div>
+        <div class="review-row"><span class="review-key">Locations</span><span class="review-val">${s.locations||'New Zealand'}</span></div>
+        <div class="review-row"><span class="review-key">Audience</span><span class="review-val">${s.gender==='MALE'?'Men':s.gender==='FEMALE'?'Women':'All genders'}, ${s.min_age||18}–${s.max_age||'65+'}</span></div>
+        <div class="review-row"><span class="review-key">Placements</span><span class="review-val">${s.placements==='MANUAL'?'Manual':'Advantage+'}</span></div>
+        ${s.start_date?`<div class="review-row"><span class="review-key">Start date</span><span class="review-val">${fmtDate(s.start_date)}</span></div>`:''}
+      </div>
     </div>`:''}
-    ${createData.adName?`<div class="review-section"><div class="review-section-title">Ad</div>
-      <div class="review-row"><span class="review-key">Name</span><span class="review-val">${createData.adName}</span></div>
-      <div class="review-row"><span class="review-key">Headline</span><span class="review-val">${createData.adHeadline||'—'}</span></div>
-      <div class="review-row"><span class="review-key">CTA</span><span class="review-val">${(createData.adCta||'LEARN_MORE').replace(/_/g,' ')}</span></div>
-    </div>`:''}
-    <div class="field-group"><div class="field-label">Save as</div>
-      <div class="status-picker">
-        <button class="status-pick-btn ${!createData.saveStatus||createData.saveStatus==='draft'?'sel-draft':''}" onclick="setSaveStatus('draft',this)">💾 Draft</button>
-        <button class="status-pick-btn ${createData.saveStatus==='in_review'?'sel-in_review':''}" onclick="setSaveStatus('in_review',this)">🔍 Submit for Review</button>
+    <div class="section-card">
+      <div class="field-group" style="margin:0">
+        <div class="field-label">Save as</div>
+        <div class="status-picker">
+          <button class="status-pick-btn ${!createData.saveStatus||createData.saveStatus==='draft'?'sel-draft':''}" onclick="setSaveStatus('draft',this)">💾 Draft</button>
+          <button class="status-pick-btn ${createData.saveStatus==='in_review'?'sel-in_review':''}" onclick="setSaveStatus('in_review',this)">🔍 Submit for Review</button>
+        </div>
       </div>
     </div>`;
     if(!createData.saveStatus)createData.saveStatus='draft';
@@ -472,6 +783,9 @@ function renderStep(step){
 }
 
 function selectObj(val,el){createData.objective=val;document.querySelectorAll('.obj-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');}
+function selectBudgetStrategy(val,el){createData.budgetStrategy=val;document.querySelectorAll('.bstrat-card').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');}
+function selectGender(val,el){if(!createData.adsetSettings)createData.adsetSettings={};createData.adsetSettings.gender=val;document.querySelectorAll('.gender-opt').forEach(g=>g.classList.remove('selected'));el.classList.add('selected');}
+function selectPlacement(val,el){if(!createData.adsetSettings)createData.adsetSettings={};createData.adsetSettings.placements=val;document.querySelectorAll('.placement-card').forEach(p=>p.classList.remove('selected'));el.classList.add('selected');}
 function setSaveStatus(s,btn){createData.saveStatus=s;document.querySelectorAll('.status-pick-btn').forEach(b=>b.className='status-pick-btn');btn.className=`status-pick-btn sel-${s}`;}
 
 function collectStep(step){
@@ -480,22 +794,35 @@ function collectStep(step){
     const name=document.getElementById('cf-name')?.value.trim();
     if(!name){msg.textContent='Please enter a campaign name.';return false;}
     createData.campaignName=name;
-    createData.buyingType=document.getElementById('cf-buying')?.value;
-    createData.budgetType=document.querySelector('input[name="btype"]:checked')?.value||'daily';
+    createData.buyingType='AUCTION';
+    createData.budgetStrategy=document.querySelector('input[name="bstrat"]:checked')?.value||createData.budgetStrategy||'campaign';
+    createData.budgetType=document.getElementById('cf-budget-type')?.value||'daily';
     createData.budget=document.getElementById('cf-budget')?.value||null;
-    createData.internalNotes=document.getElementById('cf-notes')?.value.trim()||'';
+    createData.bidStrategy=document.getElementById('cf-bid-strategy')?.value||'HIGHEST_VOLUME';
+    createData.abTest=document.getElementById('cf-ab-test')?.checked||false;
+    createData.specialAdCat=document.getElementById('cf-special-cat')?.value||'NONE';
   }else if(step===3){
-    createData.adsetName=document.getElementById('af-name')?.value.trim()||'';
-    createData.adsetTargeting=document.getElementById('af-targeting')?.value.trim()||'';
-    createData.adsetPlacements=document.getElementById('af-placements')?.value||'Automatic';
-    createData.adsetStart=document.getElementById('af-start')?.value||null;
-    createData.adsetEnd=document.getElementById('af-end')?.value||null;
-    createData.adName=document.getElementById('adf-name')?.value.trim()||'';
-    createData.adHeadline=document.getElementById('adf-headline')?.value.trim()||'';
-    createData.adBody=document.getElementById('adf-body')?.value.trim()||'';
-    createData.adCta=document.getElementById('adf-cta')?.value||'LEARN_MORE';
-    createData.adCreative=document.getElementById('adf-creative')?.value.trim()||'';
-    createData.adDest=document.getElementById('adf-dest')?.value.trim()||'';
+    if(!createData.adsetSettings)createData.adsetSettings={};
+    const s=createData.adsetSettings;
+    s.name=document.getElementById('af-name')?.value.trim()||'';
+    s.conversion_location=document.querySelector('input[name="conv-loc"]:checked')?.value||'INSTANT_FORMS';
+    s.facebook_page=document.getElementById('af-fb-page')?.value.trim()||'SUPER SUB';
+    s.performance_goal=document.getElementById('af-perf-goal')?.value||'MAXIMIZE_LEAD_GENERATION';
+    s.dataset=document.getElementById('af-dataset')?.value.trim()||'';
+    s.conversion_event=document.getElementById('af-conv-event')?.value||'LEAD';
+    s.cost_per_result_goal=document.getElementById('af-cpr-goal')?.value||null;
+    s.attribution_model=document.getElementById('af-attr-model')?.value||'STANDARD';
+    s.dynamic_creative=document.getElementById('af-dynamic')?.checked||false;
+    if(createData.budgetStrategy==='adset'){
+      s.budget_type=document.getElementById('af-budget-type')?.value||'daily';
+      s.budget=document.getElementById('af-budget')?.value||null;
+    }
+    s.start_date=document.getElementById('af-start')?.value||null;
+    s.end_date=document.getElementById('af-end')?.value||null;
+    s.locations=document.getElementById('af-locations')?.value.trim()||'New Zealand';
+    s.min_age=document.getElementById('af-min-age')?.value||'18';
+    s.max_age=document.getElementById('af-max-age')?.value||'65+';
+    s.detailed_targeting=document.getElementById('af-detailed-targeting')?.value.trim()||'';
   }
   return true;
 }
@@ -511,18 +838,18 @@ async function saveCampaign(){
   const btn=document.getElementById('btn-save'),msg=document.getElementById('step-msg');
   btn.disabled=true;btn.textContent='Saving...';msg.textContent='';
   try{
+    const campSettings={bid_strategy:createData.bidStrategy,budget_strategy:createData.budgetStrategy,ab_test:createData.abTest,special_ad_category:createData.specialAdCat};
     let campId;
     if(editId){
-      await sbPatch(`meta_planned_campaigns?id=eq.${editId}`,{name:createData.campaignName,objective:createData.objective,buying_type:createData.buyingType||'AUCTION',budget_type:createData.budgetType||'daily',budget_nzd:createData.budget||null,internal_notes:createData.internalNotes||null,updated_at:new Date().toISOString()});
+      await sbPatch(`meta_planned_campaigns?id=eq.${editId}`,{name:createData.campaignName,objective:createData.objective,buying_type:'AUCTION',budget_type:createData.budgetType||'daily',budget_nzd:createData.budget||null,settings:campSettings,updated_at:new Date().toISOString()});
       campId=editId;
     }else{
-      const [camp]=await sbPost('meta_planned_campaigns',{name:createData.campaignName,objective:createData.objective,buying_type:createData.buyingType||'AUCTION',budget_type:createData.budgetType||'daily',budget_nzd:createData.budget||null,status:createData.saveStatus||'draft',internal_notes:createData.internalNotes||null});
+      const [camp]=await sbPost('meta_planned_campaigns',{name:createData.campaignName,objective:createData.objective,buying_type:'AUCTION',budget_type:createData.budgetType||'daily',budget_nzd:createData.budget||null,status:createData.saveStatus||'draft',settings:campSettings});
       campId=camp.id;
-      if(createData.adsetName){
-        const [adset]=await sbPost('meta_planned_adsets',{campaign_id:campId,name:createData.adsetName,budget_type:createData.budgetType||'daily',targeting_summary:createData.adsetTargeting||null,placements:createData.adsetPlacements||'Automatic',start_date:createData.adsetStart||null,end_date:createData.adsetEnd||null,status:'draft'});
-        if(createData.adName){
-          await sbPost('meta_planned_ads',{adset_id:adset.id,campaign_id:campId,name:createData.adName,headline:createData.adHeadline||null,body:createData.adBody||null,call_to_action:createData.adCta||'LEARN_MORE',creative_url:createData.adCreative||null,destination_url:createData.adDest||null,status:'draft'});
-        }
+      const s=createData.adsetSettings||{};
+      if(s.name){
+        const adsetData={campaign_id:campId,name:s.name,budget_type:s.budget_type||createData.budgetType||'daily',budget_nzd:s.budget||null,start_date:s.start_date||null,end_date:s.end_date||null,status:'draft',settings:{conversion_location:s.conversion_location,facebook_page:s.facebook_page,performance_goal:s.performance_goal,dataset:s.dataset,conversion_event:s.conversion_event,cost_per_result_goal:s.cost_per_result_goal,attribution_model:s.attribution_model,dynamic_creative:s.dynamic_creative,locations:s.locations,min_age:s.min_age,max_age:s.max_age,gender:s.gender,detailed_targeting:s.detailed_targeting,placements:s.placements}};
+        await sbPost('meta_planned_adsets',adsetData);
       }
     }
     closeCreate();await loadPlanned();
