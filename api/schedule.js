@@ -78,22 +78,22 @@ module.exports = async function handler(req, res) {
       try {
         let metadata = {};
         if (platform === 'instagram') {
-          metadata = { instagram: { type: 'post', shouldShareToFeed: true } };
+          metadata = { instagram: { type: 'reels', shouldShareToFeed: true } };
         } else if (platform === 'facebook') {
-          metadata = { facebook: { type: 'post' } };
-        } else if (platform === 'linkedin_reg' || platform === 'linkedin_supersub') {
-          metadata = { linkedin: { type: 'post' } };
-        } else if (platform === 'youtube') {
-          metadata = { youtube: { type: 'video' } };
+          metadata = { facebook: { type: 'reel' } };
         }
+        // linkedin and youtube: no metadata needed (type field not accepted)
 
-        // Build assets — video post uses video asset if available, otherwise falls back to images
+        // Build assets — Buffer GraphQL API uses images array for all post types.
+        // For video posts: pass thumbnail as image. Buffer will detect/process the video
+        // via the mediaUrls field at the top level.
         let assets = {};
-        if (type === 'video' && videoUrl) {
-          assets = { video: { url: videoUrl } };
-        } else if (imageUrls?.length) {
+        if (imageUrls?.length) {
           assets = { images: imageUrls.map(url => ({ url })) };
         }
+
+        // For video posts, pass the direct video URL via mediaUrls
+        const mediaUrls = (type === 'video' && videoUrl) ? [videoUrl] : undefined;
 
         const variables = {
           input: {
@@ -102,7 +102,8 @@ module.exports = async function handler(req, res) {
             dueAt: scheduledAt,
             text: caption,
             mode: 'customScheduled',
-            assets,
+            ...(Object.keys(assets).length ? { assets } : {}),
+            ...(mediaUrls ? { mediaUrls } : {}),
             ...(Object.keys(metadata).length ? { metadata } : {}),
           }
         };
