@@ -102,6 +102,13 @@ body{font-family:'Inter',sans-serif;background:var(--gray);color:var(--text);min
 .schedule-btn:hover{opacity:0.85;}
 .schedule-btn.scheduled{background:#1a7a4a;}
 
+/* ── HD BADGE ── */
+.hd-badge{position:absolute;top:8px;left:8px;background:rgba(39,108,233,0.85);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:0.05em;backdrop-filter:blur(3px);}
+.hd-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(39,108,233,0.25);border:1px solid rgba(39,108,233,0.4);color:rgba(39,108,233,0.9);}
+.hd-url-row{margin-top:10px;padding:8px 10px;background:var(--mist);border-radius:7px;border:1px solid rgba(39,108,233,0.2);}
+.hd-url-label{font-size:9px;font-weight:600;letter-spacing:0.07em;color:var(--blue);text-transform:uppercase;margin-bottom:3px;}
+.hd-url-text{font-size:10px;font-weight:200;color:var(--muted);word-break:break-all;line-height:1.4;}
+
 /* ── LOADING / EMPTY ── */
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px;color:var(--muted);font-size:13px;font-weight:200;}
 .spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;}
@@ -438,6 +445,12 @@ footer{text-align:center;padding:24px;font-size:11px;font-weight:200;color:var(-
             <div class="script-text" id="vmodal-script"></div>
             <div class="detail-label">Caption</div>
             <div class="caption-text" id="vmodal-caption"></div>
+            <div id="vmodal-hd-row" style="display:none;margin-bottom:18px;">
+              <div class="hd-url-row">
+                <div class="hd-url-label">&#128279; HD Video (Dropbox)</div>
+                <div class="hd-url-text" id="vmodal-hd-url"></div>
+              </div>
+            </div>
             <div class="detail-label">Feedback (<span id="vmodal-cc">0</span>)</div>
             <div class="comments-list" id="vmodal-comments"></div>
           </div>
@@ -583,6 +596,7 @@ function buildVideoCard(video) {
     ? `<img src="${esc(video.thumbnail_url)}" alt="Thumbnail" loading="lazy" />`
     : `<div style="width:100%;height:100%;background:linear-gradient(160deg,#011648 0%,#276ce9 100%);"></div>`;
   const dur = video.duration_seconds ? fmtDur(video.duration_seconds) : '';
+  const hasHd = !!video.video_url_hd;
   card.innerHTML = `
     <div class="video-thumb">
       ${thumb}
@@ -590,11 +604,12 @@ function buildVideoCard(video) {
         <div class="play-circle"><div class="play-tri"></div></div>
       </div>
       ${dur ? `<div class="video-dur">${dur}</div>` : ''}
+      ${hasHd ? `<div class="hd-badge">HD</div>` : ''}
       <div class="video-badge">#${String(video.id).padStart(2,'0')}</div>
     </div>
     <div class="video-body">
       <div class="video-title">${esc(video.title)}</div>
-      <div class="video-meta">${fmtDate(video.created_at)}${dur ? ' &middot; ' + dur : ''}</div>
+      <div class="video-meta">${fmtDate(video.created_at)}${dur ? ' &middot; ' + dur : ''}${hasHd ? ' &middot; HD ready' : ''}</div>
       <button class="schedule-btn" id="sched-btn-v-${video.id}" onclick="event.stopPropagation();openSchedModal(${video.id},'video')">&#128197; Schedule to Buffer</button>
     </div>`;
   return card;
@@ -656,7 +671,8 @@ function openVModal(id) {
     `<span class="vtag">#${String(id).padStart(2,'0')}</span>
      <span class="vtag">9:16</span>
      ${video.duration_seconds ? `<span class="vtag">${fmtDur(video.duration_seconds)}</span>` : ''}
-     <span class="vtag">${fmtDate(video.created_at)}</span>`;
+     <span class="vtag">${fmtDate(video.created_at)}</span>
+     ${video.video_url_hd ? `<span class="hd-tag">HD ✓</span>` : ''}`;
   const scriptEl = document.getElementById('vmodal-script');
   if(video.script) {
     scriptEl.textContent = video.script;
@@ -667,6 +683,14 @@ function openVModal(id) {
     scriptEl.style.display = 'none';
   }
   document.getElementById('vmodal-caption').textContent = video.caption || '';
+  // HD Dropbox link info
+  const hdRow = document.getElementById('vmodal-hd-row');
+  if(video.video_url_hd) {
+    hdRow.style.display = 'block';
+    document.getElementById('vmodal-hd-url').textContent = video.video_url_hd;
+  } else {
+    hdRow.style.display = 'none';
+  }
   // reset video player
   const vidEl = document.getElementById('vmodal-video');
   vidEl.style.display = 'none'; vidEl.src = '';
@@ -798,7 +822,9 @@ async function confirmSchedule() {
     caption = c.caption; imageUrls = s.map(sl=>sl.image_url);
   } else {
     const v = D.videos.find(v=>v.id===schedItemId);
-    caption = v.caption; videoUrl = v.video_url;
+    caption = v.caption;
+    // Prioritize HD Dropbox URL if available, fallback to low-res Supabase URL
+    videoUrl = v.video_url_hd || v.video_url;
     if(v.thumbnail_url) imageUrls = [v.thumbnail_url];
   }
 
