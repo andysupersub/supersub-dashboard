@@ -24,9 +24,13 @@ module.exports = async function handler(req, res) {
   // Auto-convert Dropbox share link to direct download link
   const toDirectUrl = url => {
     if (!url) return url;
-    // Dropbox: dl=0 or dl=1 → force dl=1
     if (url.includes('dropbox.com')) {
-      return url.replace(/[?&]dl=\d/, m => m.replace(/\d$/, '1'))
+      // New-style links (scl/fi/...): just force dl=1
+      if (url.includes('/scl/fi/')) {
+        return url.replace(/([?&])dl=\d/, '$1dl=1');
+      }
+      // Old-style links (/s/...): force dl=1 + swap domain
+      return url.replace(/([?&])dl=\d/, '$1dl=1')
                 .replace('www.dropbox.com', 'dl.dropboxusercontent.com');
     }
     return url;
